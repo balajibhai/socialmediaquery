@@ -1,0 +1,14 @@
+{
+  "questions": [
+    {
+      "id": "1",
+      "text": "Example question",
+      "answer": "This is a sample answer from the mock server."
+    },
+    {
+      "id": "5311",
+      "text": "s wsr wer",
+      "answer": "Mock answer for \"s wsr wer\""
+    }
+  ]
+}
