@@ -19,35 +19,33 @@ interface Influencer {
   socialMedia: string;
 }
 
-interface SelectedInfluencer extends Influencer {
-  selectedId?: number; // ID in the "selectedInfluencers" table (if you want to track that)
-}
-
+// We store each Q&A message in the `messages` state:
 interface Message {
-  id: number;
+  id: number; // ID from the mock server
   text: string; // The user’s question
-  answer?: string; // The server’s answer
-  influencerId: number;
+  answer?: string; // The server’s response
+  influencerId: number; // Which influencer answered
 }
 
-// Mock question response:
-interface QuestionPayload {
-  text: string;
-  answer: string;
-  influencerId: number;
-}
-
-const InfluencerSearch: React.FC = () => {
+const InfluencerSearch = () => {
   // -----------------------------
-  // State
+  // State variables
   // -----------------------------
   const [socialMedia, setSocialMedia] = useState<string>("linkedin");
   const [searchValue, setSearchValue] = useState<string>("");
+
+  // Suggestions from mock server filtered by social media + search text
   const [suggestions, setSuggestions] = useState<Influencer[]>([]);
-  const [selectedInfluencers, setSelectedInfluencers] = useState<
-    SelectedInfluencer[]
-  >([]);
+
+  // The influencers chosen by the user (multi-select)
+  const [selectedInfluencers, setSelectedInfluencers] = useState<Influencer[]>(
+    []
+  );
+
+  // The typed question to be asked
   const [question, setQuestion] = useState<string>("");
+
+  // All Q&A messages to display in the “chat” section
   const [messages, setMessages] = useState<Message[]>([]);
 
   // -----------------------------
@@ -55,7 +53,7 @@ const InfluencerSearch: React.FC = () => {
   // -----------------------------
   const handleSocialMediaChange = (event: SelectChangeEvent<string>) => {
     setSocialMedia(event.target.value);
-    setSearchValue(""); // reset search on social media switch
+    setSearchValue("");
     setSuggestions([]);
   };
 
@@ -63,82 +61,98 @@ const InfluencerSearch: React.FC = () => {
     setSearchValue(event.target.value);
   };
 
-  // Add new influencer chip and save to mock server
-  const handleSelectInfluencer = async (influencer: Influencer) => {
-    // Already selected? skip
-    if (selectedInfluencers.find((inf) => inf.id === influencer.id)) {
-      return;
-    }
+  /**
+   * Called when Autocomplete’s selection changes.
+   * `newValue` can contain strings (freeSolo) or Influencer objects.
+   */
+  const handleInfluencerChange = async (
+    event: React.SyntheticEvent,
+    newValue: Array<string | Influencer>
+  ) => {
+    // 1. Filter out any freeSolo strings (or handle them if you want to create new records)
+    const filtered = newValue.filter(
+      (item): item is Influencer => typeof item !== "string"
+    );
 
-    try {
-      // POST to /selectedInfluencers to store
-      const response = await fetch(
-        "http://localhost:3001/selectedInfluencers",
-        {
+    // 2. Build a set of IDs for quick membership checking
+    const newIds = new Set(filtered.map((inf) => inf.id));
+
+    // 3. Identify newly added influencers (in the new list but not in old)
+    const newlyAdded = filtered.filter(
+      (inf) => !selectedInfluencers.some((s) => s.id === inf.id)
+    );
+
+    // 4. Identify removed influencers (in the old list but not in new)
+    const removed = selectedInfluencers.filter(
+      (oldInf) => !newIds.has(oldInf.id)
+    );
+
+    // 5. POST newly added to `selectedInfluencers` on the server
+    for (const inf of newlyAdded) {
+      try {
+        await fetch("http://localhost:3001/selectedInfluencers", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(influencer),
-        }
-      );
-      if (!response.ok) throw new Error("Failed to save influencer");
-
-      const savedInfluencer = await response.json();
-      // Merge the "selectedId" if you want to track the record’s ID in that table
-      const newSelected: SelectedInfluencer = {
-        ...influencer,
-        selectedId: savedInfluencer.id,
-      };
-
-      setSelectedInfluencers((prev) => [...prev, newSelected]);
-    } catch (error) {
-      console.error("Error saving influencer:", error);
-    }
-  };
-
-  // Remove influencer chip from local state and from mock server
-  const handleRemoveInfluencer = async (infId: number, selectedId?: number) => {
-    // Remove from local state
-    setSelectedInfluencers((prev) => prev.filter((inf) => inf.id !== infId));
-
-    // Also remove from server by its "selectedInfluencers" ID
-    if (selectedId) {
-      try {
-        const response = await fetch(
-          `http://localhost:3001/selectedInfluencers/${selectedId}`,
-          {
-            method: "DELETE",
-          }
-        );
-        if (!response.ok) throw new Error("Failed to delete influencer");
+          body: JSON.stringify(inf),
+        });
       } catch (error) {
-        console.error("Error deleting influencer:", error);
+        console.error("Error adding influencer:", inf.name, error);
       }
     }
+
+    // 6. DELETE removed from server
+    for (const inf of removed) {
+      try {
+        // We need the exact record ID in the `selectedInfluencers` table.
+        // If we only have the influencer’s “id”, we must look up that record in the mock server.
+        // In a real scenario, you'd store the ID from selectedInfluencers.
+        // For simplicity, let’s do a find or we can do a naive approach:
+        // GET /selectedInfluencers?name=inf.name&socialMedia=inf.socialMedia
+        const resp = await fetch(
+          `http://localhost:3001/selectedInfluencers?name=${encodeURIComponent(
+            inf.name
+          )}&socialMedia=${inf.socialMedia}`
+        );
+        const records: Influencer[] = await resp.json();
+        if (records.length > 0) {
+          // We’ll assume just one record
+          const recordId = records[0].id;
+          await fetch(`http://localhost:3001/selectedInfluencers/${recordId}`, {
+            method: "DELETE",
+          });
+        }
+      } catch (error) {
+        console.error("Error removing influencer:", inf.name, error);
+      }
+    }
+
+    // 7. Update local state
+    setSelectedInfluencers(filtered);
   };
 
-  // Ask question for the *last* selected influencer (or adapt to your needs)
+  // Ask a question to ALL selected influencers
   const handleAskQuestion = async () => {
     if (!question.trim() || selectedInfluencers.length === 0) return;
 
-    // Let's say we ask the question for the most recently selected influencer:
-    const currentInf = selectedInfluencers[selectedInfluencers.length - 1];
-
     try {
-      // POST a new question to /questions. The server might generate the answer, or we do it mock.
-      // We'll store a mock "answer" to demonstrate how to fetch it back
-      const response = await fetch("http://localhost:3001/questions", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          text: question,
-          answer: `Mock answer for ${currentInf.name}: [${question}]`,
-          influencerId: currentInf.id,
-        } as QuestionPayload),
-      });
-      if (!response.ok) throw new Error("Failed to post question");
-
-      const newMessage: Message = await response.json();
-      setMessages((prev) => [...prev, newMessage]);
+      // For each selected influencer, POST a new question to /questions
+      const newMessages: Message[] = [];
+      for (const inf of selectedInfluencers) {
+        const response = await fetch("http://localhost:3001/questions", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            text: question,
+            answer: `Mock answer from ${inf.name} for: "${question}"`,
+            influencerId: inf.id,
+          }),
+        });
+        if (!response.ok) throw new Error("Failed to post question");
+        const createdMessage: Message = await response.json();
+        newMessages.push(createdMessage);
+      }
+      // Update local messages state with all newly created Q&As
+      setMessages((prev) => [...prev, ...newMessages]);
       setQuestion("");
     } catch (error) {
       console.error("Error posting question:", error);
@@ -146,32 +160,49 @@ const InfluencerSearch: React.FC = () => {
   };
 
   // -----------------------------
-  // Fetch suggestions on searchValue or socialMedia change
+  // Fetch suggestions
   // -----------------------------
   useEffect(() => {
     if (!searchValue.trim()) {
       setSuggestions([]);
       return;
     }
-    // GET from /influencers?socialMedia=xxx&q=searchValue
+
     const fetchSuggestions = async () => {
       try {
+        // GET from /influencers?socialMedia=xxx&q=searchValue
         const resp = await fetch(
           `http://localhost:3001/influencers?socialMedia=${socialMedia}&q=${searchValue}`
         );
-        if (!resp.ok) throw new Error("Failed to fetch suggestions");
+        if (!resp.ok) throw new Error("Failed to fetch influencers");
         const data: Influencer[] = await resp.json();
         setSuggestions(data);
       } catch (error) {
-        console.error("Error fetching influencers:", error);
+        console.error("Error fetching suggestions:", error);
       }
     };
 
     fetchSuggestions();
   }, [searchValue, socialMedia]);
 
+  // Optionally, on mount, fetch any previously selected influencers:
+  useEffect(() => {
+    const fetchSelectedInfluencers = async () => {
+      try {
+        const resp = await fetch("http://localhost:3001/selectedInfluencers");
+        if (resp.ok) {
+          const data: Influencer[] = await resp.json();
+          setSelectedInfluencers(data);
+        }
+      } catch (error) {
+        console.error("Error fetching selectedInfluencers:", error);
+      }
+    };
+    fetchSelectedInfluencers();
+  }, []);
+
   // -----------------------------
-  // UI
+  // Layout
   // -----------------------------
   return (
     <Box
@@ -181,7 +212,7 @@ const InfluencerSearch: React.FC = () => {
         height: "100vh",
       }}
     >
-      {/* ---------- TOP SECTION: Dropdown + Autocomplete + Chips ---------- */}
+      {/* ---------- TOP SECTION: Social Media + Autocomplete ---------- */}
       <Box style={{ padding: "16px", borderBottom: "1px solid #ccc" }}>
         {/* Social Media Dropdown */}
         <FormControl
@@ -202,19 +233,24 @@ const InfluencerSearch: React.FC = () => {
           </Select>
         </FormControl>
 
-        {/* Autocomplete for influencer suggestions */}
+        {/* Autocomplete with multiple selection */}
         <Autocomplete
+          multiple
           freeSolo
+          value={selectedInfluencers}
           options={suggestions}
           getOptionLabel={(option) =>
             typeof option === "string" ? option : option.name
           }
-          onChange={(event, newValue) => {
-            // If user picks an option from the dropdown
-            if (newValue && typeof newValue !== "string") {
-              handleSelectInfluencer(newValue);
-            }
-          }}
+          onChange={handleInfluencerChange}
+          renderTags={(tagValue, getTagProps) =>
+            tagValue.map((option, index) => (
+              <Chip
+                label={option.name}
+                {...getTagProps({ index })} // This includes the "key" prop
+              />
+            ))
+          }
           renderInput={(params) => (
             <TextField
               {...params}
@@ -225,20 +261,7 @@ const InfluencerSearch: React.FC = () => {
               style={{ width: 300 }}
             />
           )}
-          style={{ display: "inline-block" }}
         />
-
-        {/* Chips for selected influencers */}
-        <Box style={{ marginTop: "16px" }}>
-          {selectedInfluencers.map((inf) => (
-            <Chip
-              key={inf.id}
-              label={inf.name}
-              onDelete={() => handleRemoveInfluencer(inf.id, inf.selectedId)}
-              style={{ marginRight: "8px", marginBottom: "8px" }}
-            />
-          ))}
-        </Box>
       </Box>
 
       {/* ---------- MIDDLE SECTION: Chat / Messages ---------- */}
@@ -277,7 +300,7 @@ const InfluencerSearch: React.FC = () => {
           placeholder={
             selectedInfluencers.length === 0
               ? "Select at least one influencer first..."
-              : "Ask any question to the last selected influencer..."
+              : "Ask a question to ALL selected influencers..."
           }
           value={question}
           onChange={(e) => setQuestion(e.target.value)}
