@@ -1,14 +1,31 @@
 {
-  "questions": [
+  "influencers": [
     {
-      "id": "1",
-      "text": "Example question",
-      "answer": "This is a sample answer from the mock server."
+      "id": 1,
+      "name": "John Doe",
+      "socialMedia": "linkedin"
     },
     {
-      "id": "5311",
-      "text": "s wsr wer",
-      "answer": "Mock answer for \"s wsr wer\""
+      "id": 2,
+      "name": "Jane Smith",
+      "socialMedia": "linkedin"
+    },
+    {
+      "id": 3,
+      "name": "Youtuber Mike",
+      "socialMedia": "youtube"
+    },
+    {
+      "id": 4,
+      "name": "Tweety Bird",
+      "socialMedia": "twitter"
+    },
+    {
+      "id": 5,
+      "name": "FB Mark",
+      "socialMedia": "facebook"
     }
-  ]
+  ],
+  "selectedInfluencers": [],
+  "questions": []
 }
