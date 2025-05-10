@@ -1,70 +1,35 @@
 {
   "influencers": [
     {
-      "id": 1,
+      "id": "1",
       "name": "John Doe",
       "socialMedia": "linkedin"
     },
     {
-      "id": 2,
+      "id": "2",
       "name": "Jane Smith",
       "socialMedia": "linkedin"
     },
     {
-      "id": 3,
+      "id": "3",
       "name": "MikeTube",
       "socialMedia": "youtube"
     },
     {
-      "id": 4,
+      "id": "4",
       "name": "Tweety Bird",
       "socialMedia": "twitter"
     },
     {
-      "id": 5,
+      "id": "5",
       "name": "FB Mark",
       "socialMedia": "facebook"
     }
   ],
   "selectedInfluencers": [
     {
-      "id": 2,
-      "name": "Jane Smith",
-      "socialMedia": "linkedin"
-    },
-    {
-      "id": 1,
+      "id": "1",
       "name": "John Doe",
-      "socialMedia": "linkedin"
-    },
-    {
-      "id": 3,
-      "name": "MikeTube",
-      "socialMedia": "youtube"
-    },
-    {
-      "id": 5,
-      "name": "FB Mark",
-      "socialMedia": "facebook"
-    },
-    {
-      "id": 3,
-      "name": "MikeTube",
-      "socialMedia": "youtube"
-    },
-    {
-      "id": 2,
-      "name": "Jane Smith",
-      "socialMedia": "linkedin"
-    },
-    {
-      "id": 1,
-      "name": "John Doe",
-      "socialMedia": "linkedin"
-    },
-    {
-      "id": 2,
-      "name": "Jane Smith",
       "socialMedia": "linkedin"
     }
   ],
@@ -104,6 +69,126 @@
       "text": "hi",
       "answer": "Mock answer from MikeTube for: \"hi\"",
       "influencerId": 3
+    },
+    {
+      "id": "2745",
+      "text": "hey\n",
+      "answer": "Mock answer from Jane Smith for: \"hey\n\"",
+      "influencerId": "2"
+    },
+    {
+      "id": "ecaa",
+      "text": "hey\n",
+      "answer": "Mock answer from John Doe for: \"hey\n\"",
+      "influencerId": "1"
+    },
+    {
+      "id": "0405",
+      "text": "hey\n",
+      "answer": "Mock answer from MikeTube for: \"hey\n\"",
+      "influencerId": "3"
+    },
+    {
+      "id": "cda1",
+      "text": "hey\n",
+      "answer": "Mock answer from FB Mark for: \"hey\n\"",
+      "influencerId": "5"
+    },
+    {
+      "id": "0b97",
+      "text": "hey\n",
+      "answer": "Mock answer from MikeTube for: \"hey\n\"",
+      "influencerId": "3"
+    },
+    {
+      "id": "af07",
+      "text": "hey\n",
+      "answer": "Mock answer from Jane Smith for: \"hey\n\"",
+      "influencerId": "2"
+    },
+    {
+      "id": "94c7",
+      "text": "hey\n",
+      "answer": "Mock answer from John Doe for: \"hey\n\"",
+      "influencerId": "1"
+    },
+    {
+      "id": "efda",
+      "text": "hey\n",
+      "answer": "Mock answer from Jane Smith for: \"hey\n\"",
+      "influencerId": "2"
+    },
+    {
+      "id": "78a1",
+      "text": "hey\n",
+      "answer": "Mock answer from John Doe for: \"hey\n\"",
+      "influencerId": "1"
+    },
+    {
+      "id": "3e76",
+      "text": "Hi",
+      "answer": "Mock answer from John Doe for: \"Hi\"",
+      "influencerId": "1"
+    },
+    {
+      "id": "3bb4",
+      "text": "heh",
+      "answer": "Mock answer from John Doe for: \"heh\"",
+      "influencerId": "1"
+    },
+    {
+      "id": "0e82",
+      "text": "heh",
+      "answer": "Mock answer from John Doe for: \"heh\"",
+      "influencerId": "1"
+    },
+    {
+      "id": "9f2d",
+      "text": "heh",
+      "answer": "Mock answer from John Doe for: \"heh\"",
+      "influencerId": "1"
+    },
+    {
+      "id": "6a86",
+      "text": "heh",
+      "answer": "Mock answer from John Doe for: \"heh\"",
+      "influencerId": "1"
+    },
+    {
+      "id": "4031",
+      "text": "heh",
+      "answer": "Mock answer from John Doe for: \"heh\"",
+      "influencerId": "1"
+    },
+    {
+      "id": "dcbf",
+      "text": "heh",
+      "answer": "Mock answer from John Doe for: \"heh\"",
+      "influencerId": "1"
+    },
+    {
+      "id": "019b",
+      "text": "heh",
+      "answer": "Mock answer from John Doe for: \"heh\"",
+      "influencerId": "1"
+    },
+    {
+      "id": "4369",
+      "text": "heh",
+      "answer": "Mock answer from John Doe for: \"heh\"",
+      "influencerId": "1"
+    },
+    {
+      "id": "e2cf",
+      "text": "heh",
+      "answer": "Mock answer from John Doe for: \"heh\"",
+      "influencerId": "1"
+    },
+    {
+      "id": "275c",
+      "text": "heh",
+      "answer": "Mock answer from John Doe for: \"heh\"",
+      "influencerId": "1"
     }
   ]
 }
