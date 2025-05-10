@@ -10,7 +10,6 @@ interface TableComponentProps {
 }
 
 const TableComponent: React.FC<TableComponentProps> = ({ text }) => {
-  console.log("text: ", text);
   const [entries, setEntries] = useState<Entry[]>([]);
 
   useEffect(() => {

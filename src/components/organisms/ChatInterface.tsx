@@ -1,5 +1,6 @@
 import { Box, Button, TextField, Typography } from "@mui/material";
 import React, { useState } from "react";
+import TextComponent from "../atoms/TextComponent";
 import GraphComponent from "../molecules/GraphComponent";
 import TableComponent from "../molecules/TableComponent";
 
@@ -16,7 +17,7 @@ interface Message {
 const componentMap = {
   table: TableComponent,
   graph: GraphComponent,
-  // text: "TextComponent",
+  text: TextComponent,
 };
 
 const ChatInterface = () => {
@@ -40,7 +41,6 @@ const ChatInterface = () => {
         body: JSON.stringify({ text: question }),
       });
       const data = await response.json();
-      console.log("data: ", data);
       if (data.key) {
         const Component = componentMap[data.key as keyof typeof componentMap];
         setMessages((prev) =>
