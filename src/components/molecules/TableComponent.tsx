@@ -1,29 +1,36 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 interface Entry {
   date: string;
   distance: number;
 }
 
-const TableComponent: React.FC = () => {
-  const [text, setText] = useState("");
+interface TableComponentProps {
+  text: string;
+}
+
+const TableComponent: React.FC<TableComponentProps> = ({ text }) => {
+  console.log("text: ", text);
   const [entries, setEntries] = useState<Entry[]>([]);
-  const lines = text.split(/\r?\n/);
-  const parsed: Entry[] = [];
 
-  lines.forEach((line) => {
-    const match = line.match(
-      /date:\s*(\d{2}\/\d{2}\/\d{4})\s*distance:\s*(\d+)/i
-    );
-    if (match) {
-      parsed.push({
-        date: match[1],
-        distance: parseInt(match[2], 10),
-      });
-    }
-  });
+  useEffect(() => {
+    const lines = text.split(/\r?\n/);
+    const parsed: Entry[] = [];
 
-  setEntries(parsed);
+    lines.forEach((line) => {
+      const match = line.match(
+        /date:\s*(\d{2}\/\d{2}\/\d{4})\s*distance:\s*(\d+)/i
+      );
+      if (match) {
+        parsed.push({
+          date: match[1],
+          distance: parseInt(match[2], 10),
+        });
+      }
+    });
+
+    setEntries(parsed);
+  }, [text]);
 
   return (
     <div>

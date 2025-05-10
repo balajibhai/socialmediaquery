@@ -1,5 +1,6 @@
 import { Box, Button, TextField, Typography } from "@mui/material";
-import { useState } from "react";
+import React, { useState } from "react";
+import GraphComponent from "../molecules/GraphComponent";
 import TableComponent from "../molecules/TableComponent";
 
 interface Message {
@@ -7,13 +8,15 @@ interface Message {
   text: string; // The user’s question
   answer?: string; // The server’s response
   timeStamp?: string; // The time the message was sent
-  component?: React.FC; // The component to render
+  component?: React.FC<{ text: string }>; // The component to render
+  maindata?: string; // The main data from the server
+  // This is the data that will be passed to the component
 }
 
 const componentMap = {
   table: TableComponent,
+  graph: GraphComponent,
   // text: "TextComponent",
-  // graph: "GraphComponent",
 };
 
 const ChatInterface = () => {
@@ -37,9 +40,9 @@ const ChatInterface = () => {
         body: JSON.stringify({ text: question }),
       });
       const data = await response.json();
+      console.log("data: ", data);
       if (data.key) {
         const Component = componentMap[data.key as keyof typeof componentMap];
-        console.log("Component: ", Component);
         setMessages((prev) =>
           prev.map((msg) =>
             msg.id === newMessage.id
@@ -48,6 +51,7 @@ const ChatInterface = () => {
                   answer: data.value,
                   timeStamp: data.timestamp,
                   component: Component,
+                  maindata: data.maindata,
                 }
               : msg
           )
@@ -85,13 +89,16 @@ const ChatInterface = () => {
               <Typography variant="body2" style={{ fontWeight: "bold" }}>
                 Q: {msg.text}
               </Typography>
-              <Box style={{ display: "flex", flexDirection: "row" }}>
+              <Box style={{ display: "flex", flexDirection: "column" }}>
                 <Typography variant="body2" style={{ marginLeft: "8px" }}>
                   A: {msg.answer}
                 </Typography>
                 <Typography variant="body2" style={{ marginLeft: "8px" }}>
                   {msg.timeStamp}
                 </Typography>
+                {msg.component &&
+                  msg.maindata &&
+                  React.createElement(msg.component, { text: msg.maindata })}
               </Box>
             </Box>
           ))
