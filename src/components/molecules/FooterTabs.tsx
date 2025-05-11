@@ -1,10 +1,15 @@
-// src/components/FooterTabs.tsx
 import { BottomNavigation, BottomNavigationAction, Paper } from "@mui/material";
-import React, { useEffect, useState } from "react";
+import { useState } from "react";
+
+interface TabDefinition {
+  label: string;
+  value: string;
+  icon?: React.ReactNode;
+}
 
 interface FooterTabsProps {
-  /** Number of tabs to display */
-  numberOfTabs: number;
+  /** Array of tab definitions to display */
+  tabs: TabDefinition[];
   /** Which tab is active by default */
   defaultTab?: string;
   /** Called whenever the user clicks a tab */
@@ -12,18 +17,11 @@ interface FooterTabsProps {
 }
 
 const FooterTabs: React.FC<FooterTabsProps> = ({
-  numberOfTabs,
-  defaultTab = "tab1",
+  tabs,
+  defaultTab = tabs[0]?.value ?? "",
   onChange,
 }) => {
   const [value, setValue] = useState<string>(defaultTab);
-  const [totalTabs, setTotalTabs] = useState<number>(0);
-
-  useEffect(() => {
-    if (numberOfTabs > 0) {
-      setTotalTabs((prev) => prev + numberOfTabs);
-    }
-  }, [numberOfTabs]);
 
   const handleChange = (_: React.SyntheticEvent, newValue: string) => {
     setValue(newValue);
@@ -41,11 +39,12 @@ const FooterTabs: React.FC<FooterTabsProps> = ({
       }}
     >
       <BottomNavigation value={value} onChange={handleChange} showLabels>
-        {Array.from({ length: totalTabs }, (_, i) => (
+        {tabs.map((tab) => (
           <BottomNavigationAction
-            key={`tab${i + 1}`}
-            label={`Tab${i + 1}`}
-            value={`tab${i + 1}`}
+            key={tab.value}
+            label={tab.label}
+            value={tab.value}
+            icon={tab.icon}
           />
         ))}
       </BottomNavigation>

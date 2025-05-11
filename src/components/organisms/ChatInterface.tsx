@@ -24,7 +24,7 @@ const componentMap = {
 const ChatInterface = () => {
   const [question, setQuestion] = useState<string>("");
   const [messages, setMessages] = useState<Message[]>([]);
-  const [numberOfTabs, setNumberOfTabs] = useState<number>(0);
+  const [allTabs, setAllTabs] = useState([{ label: "Tab1", value: "tab1" }]);
 
   const onSend = async () => {
     if (!question) return;
@@ -46,7 +46,14 @@ const ChatInterface = () => {
       if (data.key) {
         const Component = componentMap[data.key as keyof typeof componentMap];
         if (data.key === "tab") {
-          setNumberOfTabs(data.numberOfTabs);
+          const newTabs = Array.from(
+            { length: data.numberOfTabs },
+            (_, index) => ({
+              label: `Tab${allTabs.length + index + 1}`,
+              value: `tab${allTabs.length + index + 1}`,
+            })
+          );
+          setAllTabs((prev) => [...prev, ...newTabs]);
         }
         setMessages((prev) =>
           prev.map((msg) =>
@@ -139,9 +146,9 @@ const ChatInterface = () => {
         </Button>
         <div style={{ paddingBottom: 56 }}>
           <FooterTabs
-            defaultTab="tab2"
+            defaultTab="tab1"
             onChange={(tab) => console.log("Selected:", tab)}
-            numberOfTabs={numberOfTabs}
+            tabs={allTabs}
           />
         </div>
       </Box>
