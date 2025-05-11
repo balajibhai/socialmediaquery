@@ -1,6 +1,6 @@
 // src/components/FooterTabs.tsx
 import { BottomNavigation, BottomNavigationAction, Paper } from "@mui/material";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 interface FooterTabsProps {
   /** Number of tabs to display */
@@ -17,6 +17,13 @@ const FooterTabs: React.FC<FooterTabsProps> = ({
   onChange,
 }) => {
   const [value, setValue] = useState<string>(defaultTab);
+  const [totalTabs, setTotalTabs] = useState<number>(0);
+
+  useEffect(() => {
+    if (numberOfTabs > 0) {
+      setTotalTabs((prev) => prev + numberOfTabs);
+    }
+  }, [numberOfTabs]);
 
   const handleChange = (_: React.SyntheticEvent, newValue: string) => {
     setValue(newValue);
@@ -34,7 +41,7 @@ const FooterTabs: React.FC<FooterTabsProps> = ({
       }}
     >
       <BottomNavigation value={value} onChange={handleChange} showLabels>
-        {Array.from({ length: numberOfTabs }, (_, i) => (
+        {Array.from({ length: totalTabs }, (_, i) => (
           <BottomNavigationAction
             key={`tab${i + 1}`}
             label={`Tab${i + 1}`}
