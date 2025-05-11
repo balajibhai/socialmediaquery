@@ -1,6 +1,7 @@
 import { Box, Button, TextField, Typography } from "@mui/material";
 import React, { useState } from "react";
 import TextComponent from "../atoms/TextComponent";
+import FooterTabs from "../molecules/FooterTabs";
 import GraphComponent from "../molecules/GraphComponent";
 import TableComponent from "../molecules/TableComponent";
 
@@ -23,6 +24,7 @@ const componentMap = {
 const ChatInterface = () => {
   const [question, setQuestion] = useState<string>("");
   const [messages, setMessages] = useState<Message[]>([]);
+  const [numberOfTabs, setNumberOfTabs] = useState<number>(0);
 
   const onSend = async () => {
     if (!question) return;
@@ -43,6 +45,9 @@ const ChatInterface = () => {
       const data = await response.json();
       if (data.key) {
         const Component = componentMap[data.key as keyof typeof componentMap];
+        if (data.key === "tab") {
+          setNumberOfTabs(data.numberOfTabs);
+        }
         setMessages((prev) =>
           prev.map((msg) =>
             msg.id === newMessage.id
@@ -132,6 +137,13 @@ const ChatInterface = () => {
         >
           Ask
         </Button>
+        <div style={{ paddingBottom: 56 }}>
+          <FooterTabs
+            defaultTab="tab2"
+            onChange={(tab) => console.log("Selected:", tab)}
+            numberOfTabs={numberOfTabs}
+          />
+        </div>
       </Box>
     </Box>
   );
