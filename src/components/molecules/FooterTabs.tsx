@@ -4,7 +4,6 @@ import { useState } from "react";
 interface TabDefinition {
   label: string;
   value: string;
-  icon?: React.ReactNode;
 }
 
 interface FooterTabsProps {
@@ -44,7 +43,6 @@ const FooterTabs: React.FC<FooterTabsProps> = ({
             key={tab.value}
             label={tab.label}
             value={tab.value}
-            icon={tab.icon}
           />
         ))}
       </BottomNavigation>

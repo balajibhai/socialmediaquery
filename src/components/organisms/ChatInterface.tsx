@@ -24,7 +24,6 @@ const componentMap = {
 const ChatInterface = () => {
   const [question, setQuestion] = useState<string>("");
   const [messages, setMessages] = useState<Message[]>([]);
-
   const [allTabs, setAllTabs] = useState([{ label: "Tab1", value: "tab1" }]);
 
   const onSend = async () => {
@@ -55,6 +54,14 @@ const ChatInterface = () => {
             })
           );
           setAllTabs((prev) => [...prev, ...newTabs]);
+        } else if (data.key === "set") {
+          setAllTabs((prev) =>
+            prev.map((tab) =>
+              tab.value === `tab${data.numberOfTabs}`
+                ? { ...tab, text: data.maindata }
+                : tab
+            )
+          );
         }
         setMessages((prev) =>
           prev.map((msg) =>
