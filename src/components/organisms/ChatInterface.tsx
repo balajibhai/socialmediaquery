@@ -1,94 +1,16 @@
 import { Box, Button, TextField, Typography } from "@mui/material";
-import React, { useState } from "react";
-import TextComponent from "../atoms/TextComponent";
-import FooterTabs from "../molecules/FooterTabs";
-import GraphComponent from "../molecules/GraphComponent";
-import TableComponent from "../molecules/TableComponent";
+import React from "react";
+import { Message } from "../../types";
 
-interface Message {
-  id: number; // ID from the mock server
-  text: string; // The user’s question
-  answer?: string; // The server’s response
-  timeStamp?: string; // The time the message was sent
-  component?: React.FC<{ text: string }>; // The component to render
-  maindata?: string; // The main data from the server
-  // This is the data that will be passed to the component
-}
-
-const componentMap = {
-  table: TableComponent,
-  graph: GraphComponent,
-  text: TextComponent,
+type ChatInterfaceProps = {
+  question: string;
+  setQuestion: React.Dispatch<React.SetStateAction<string>>;
+  messages: Message[];
+  onSend: () => void;
 };
 
-const ChatInterface = () => {
-  const [question, setQuestion] = useState<string>("");
-  const [messages, setMessages] = useState<Message[]>([]);
-  const [allTabs, setAllTabs] = useState([{ label: "Tab1", value: "tab1" }]);
-
-  const onSend = async () => {
-    if (!question) return;
-    const newMessage: Message = {
-      id: messages.length + 1,
-      text: question,
-    };
-    setMessages((prev) => [...prev, newMessage]);
-    setQuestion("");
-    try {
-      const response = await fetch("http://localhost:5000/api/detect", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ text: question }),
-      });
-      const data = await response.json();
-      if (data.key) {
-        const Component = componentMap[data.key as keyof typeof componentMap];
-        if (data.key === "tab") {
-          const newTabs = Array.from(
-            { length: data.numberOfTabs },
-            (_, index) => ({
-              label: `Tab${allTabs.length + index + 1}`,
-              value: `tab${allTabs.length + index + 1}`,
-            })
-          );
-          setAllTabs((prev) => [...prev, ...newTabs]);
-        } else if (data.key === "set") {
-          setAllTabs((prev) =>
-            prev.map((tab) =>
-              tab.value === `tab${data.numberOfTabs}`
-                ? { ...tab, text: data.maindata }
-                : tab
-            )
-          );
-        }
-        setMessages((prev) =>
-          prev.map((msg) =>
-            msg.id === newMessage.id
-              ? {
-                  ...msg,
-                  answer: data.value,
-                  timeStamp: data.timestamp,
-                  component: Component,
-                  maindata: data.maindata,
-                }
-              : msg
-          )
-        );
-      }
-    } catch (error) {
-      console.error("Error fetching data:", error);
-      setMessages((prev) =>
-        prev.map((msg) =>
-          msg.id === newMessage.id
-            ? { ...msg, answer: "Error fetching data" }
-            : msg
-        )
-      );
-    }
-  };
-
+const ChatInterface = (props: ChatInterfaceProps) => {
+  const { question, setQuestion, messages, onSend } = props;
   return (
     <Box
       style={{
@@ -152,13 +74,6 @@ const ChatInterface = () => {
         >
           Ask
         </Button>
-        <div style={{ paddingBottom: 56 }}>
-          <FooterTabs
-            defaultTab="tab1"
-            onChange={(tab) => console.log("Selected:", tab)}
-            tabs={allTabs}
-          />
-        </div>
       </Box>
     </Box>
   );
