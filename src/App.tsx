@@ -17,7 +17,7 @@ const App = () => {
   const [question, setQuestion] = useState<string>("");
   const [messages, setMessages] = useState<Message[]>([]);
   const [allTabs, setAllTabs] = useState([
-    { label: "Tab1", value: "tab1", text: "" },
+    { label: "Tab1", value: "tab1", component: "" },
   ]);
   const onSend = async () => {
     if (!question) return;
@@ -44,7 +44,7 @@ const App = () => {
             (_, index) => ({
               label: `Tab${allTabs.length + index + 1}`,
               value: `tab${allTabs.length + index + 1}`,
-              text: "",
+              component: "",
             })
           );
           setAllTabs((prev) => [...prev, ...newTabs]);
@@ -52,7 +52,7 @@ const App = () => {
           setAllTabs((prev) =>
             prev.map((tab) =>
               tab.value === `tab${data.numberOfTabs}`
-                ? { ...tab, text: data.maindata }
+                ? { ...tab, component: data.maindata }
                 : tab
             )
           );
@@ -85,18 +85,24 @@ const App = () => {
   return (
     <BrowserRouter>
       <div>
-        <HomePage
-          question={question}
-          setQuestion={setQuestion}
-          messages={messages}
-          onSend={onSend}
-        />
         <Routes>
+          <Route
+            key="tab1"
+            path="/tab1"
+            element={
+              <HomePage
+                question={question}
+                setQuestion={setQuestion}
+                messages={messages}
+                onSend={onSend}
+              />
+            }
+          />
           {allTabs.map((tab) => (
             <Route
               key={tab.value}
               path={`/${tab.value}`}
-              element={<div>{tab.text}</div>}
+              element={tab.component}
             />
           ))}
           <Route path="*" element={<div>404 - Not Found</div>} />
