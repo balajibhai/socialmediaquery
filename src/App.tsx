@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { ComponentType, useState } from "react";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import TextComponent from "./components/atoms/TextComponent";
 import FooterTabs from "./components/molecules/FooterTabs";
@@ -13,12 +13,20 @@ const componentMap = {
   text: TextComponent,
 };
 
-const App = () => {
+// Allow the component slot to be either a React component or left undefined
+type TabConfig = {
+  label: string;
+  value: string;
+  component?: ComponentType<any>;
+};
+
+const App: React.FC = () => {
   const [question, setQuestion] = useState<string>("");
   const [messages, setMessages] = useState<Message[]>([]);
-  const [allTabs, setAllTabs] = useState([
-    { label: "Tab1", value: "tab1", component: "" },
+  const [allTabs, setAllTabs] = useState<TabConfig[]>([
+    { label: "Tab1", value: "tab1", component: HomePage },
   ]);
+
   const onSend = async () => {
     if (!question) return;
     const newMessage: Message = {
@@ -30,33 +38,37 @@ const App = () => {
     try {
       const response = await fetch("http://localhost:5000/api/detect", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ text: question }),
       });
       const data = await response.json();
+
       if (data.key) {
         const Component = componentMap[data.key as keyof typeof componentMap];
+
         if (data.key === "tab") {
+          // add N new empty tabs
           const newTabs = Array.from(
             { length: data.numberOfTabs },
             (_, index) => ({
               label: `Tab${allTabs.length + index + 1}`,
               value: `tab${allTabs.length + index + 1}`,
-              component: "",
+              component: undefined,
             })
           );
           setAllTabs((prev) => [...prev, ...newTabs]);
         } else if (data.key === "set") {
+          // assign HomePage to a specific tab
           setAllTabs((prev) =>
             prev.map((tab) =>
               tab.value === `tab${data.numberOfTabs}`
-                ? { ...tab, component: data.maindata }
+                ? { ...tab, component: HomePage }
                 : tab
             )
           );
         }
+
+        // attach the answer/component to the message
         setMessages((prev) =>
           prev.map((msg) =>
             msg.id === newMessage.id
@@ -82,35 +94,43 @@ const App = () => {
       );
     }
   };
+
   return (
     <BrowserRouter>
       <div>
         <Routes>
-          <Route
-            key="tab1"
-            path="/tab1"
-            element={
-              <HomePage
-                question={question}
-                setQuestion={setQuestion}
-                messages={messages}
-                onSend={onSend}
-              />
-            }
-          />
           {allTabs.map((tab) => (
             <Route
               key={tab.value}
               path={`/${tab.value}`}
-              element={tab.component}
+              element={
+                tab.component ? (
+                  <tab.component
+                    question={question}
+                    setQuestion={setQuestion}
+                    messages={messages}
+                    onSend={onSend}
+                  />
+                ) : (
+                  <div>No Component Assigned</div>
+                )
+              }
             />
           ))}
+
+          {/* Optional: redirect root to first tab */}
+          <Route
+            path="/"
+            element={<div>Please select a tab from the footer.</div>}
+          />
+
           <Route path="*" element={<div>404 - Not Found</div>} />
         </Routes>
+
         <div style={{ paddingBottom: 56 }}>
           <FooterTabs
             defaultTab="tab1"
-            onChange={(tab) => console.log("Selected:", tab)}
+            onChange={(tab) => null}
             tabs={allTabs}
           />
         </div>
