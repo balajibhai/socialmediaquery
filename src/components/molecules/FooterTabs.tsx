@@ -1,5 +1,6 @@
 import { BottomNavigation, BottomNavigationAction, Paper } from "@mui/material";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 interface TabDefinition {
   label: string;
@@ -21,10 +22,11 @@ const FooterTabs: React.FC<FooterTabsProps> = ({
   onChange,
 }) => {
   const [value, setValue] = useState<string>(defaultTab);
-
+  const navigate = useNavigate();
   const handleChange = (_: React.SyntheticEvent, newValue: string) => {
     setValue(newValue);
     onChange?.(newValue);
+    navigate(`/${newValue}`);
   };
 
   return (

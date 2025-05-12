@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
 import TextComponent from "../components/atoms/TextComponent";
 import FooterTabs from "../components/molecules/FooterTabs";
 import GraphComponent from "../components/molecules/GraphComponent";
@@ -15,7 +16,9 @@ const componentMap = {
 const HomePage = () => {
   const [question, setQuestion] = useState<string>("");
   const [messages, setMessages] = useState<Message[]>([]);
-  const [allTabs, setAllTabs] = useState([{ label: "Tab1", value: "tab1" }]);
+  const [allTabs, setAllTabs] = useState([
+    { label: "Tab1", value: "tab1", text: "" },
+  ]);
   const onSend = async () => {
     if (!question) return;
     const newMessage: Message = {
@@ -41,6 +44,7 @@ const HomePage = () => {
             (_, index) => ({
               label: `Tab${allTabs.length + index + 1}`,
               value: `tab${allTabs.length + index + 1}`,
+              text: "",
             })
           );
           setAllTabs((prev) => [...prev, ...newTabs]);
@@ -79,14 +83,26 @@ const HomePage = () => {
     }
   };
   return (
-    <div style={{ maxWidth: "800px", margin: "0 auto" }}>
-      <h1 style={{ textAlign: "center" }}>Dynamic component chat</h1>
-      <ChatInterface
-        question={question}
-        setQuestion={setQuestion}
-        messages={messages}
-        onSend={onSend}
-      />
+    <BrowserRouter>
+      <div style={{ maxWidth: "800px", margin: "0 auto" }}>
+        <h1 style={{ textAlign: "center" }}>Dynamic component chat</h1>
+        <ChatInterface
+          question={question}
+          setQuestion={setQuestion}
+          messages={messages}
+          onSend={onSend}
+        />
+      </div>
+      <Routes>
+        {allTabs.map((tab) => (
+          <Route
+            key={tab.value}
+            path={`/${tab.value}`}
+            element={<div>{tab.text}</div>}
+          />
+        ))}
+        <Route path="*" element={<div>404 - Not Found</div>} />
+      </Routes>
       <div style={{ paddingBottom: 56 }}>
         <FooterTabs
           defaultTab="tab1"
@@ -94,7 +110,7 @@ const HomePage = () => {
           tabs={allTabs}
         />
       </div>
-    </div>
+    </BrowserRouter>
   );
 };
 
