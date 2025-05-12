@@ -1,24 +1,10 @@
-import React, { ComponentType, useState } from "react";
+import React, { useState } from "react";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
-import TextComponent from "./components/atoms/TextComponent";
 import FooterTabs from "./components/molecules/FooterTabs";
-import GraphComponent from "./components/molecules/GraphComponent";
-import TableComponent from "./components/molecules/TableComponent";
+import TabRoute from "./components/molecules/TabRoute";
 import HomePage from "./pages/HomePage";
-import { Message } from "./types";
-
-const componentMap = {
-  table: TableComponent,
-  graph: GraphComponent,
-  text: TextComponent,
-};
-
-// Allow the component slot to be either a React component or left undefined
-type TabConfig = {
-  label: string;
-  value: string;
-  component?: ComponentType<any>;
-};
+import { MessageHandler } from "./services/MessageHandler";
+import { Message, TabConfig } from "./types";
 
 const App: React.FC = () => {
   const [question, setQuestion] = useState<string>("");
@@ -27,71 +13,66 @@ const App: React.FC = () => {
     { label: "Tab1", value: "tab1", component: HomePage },
   ]);
 
+  const handleTabCreation = (data: any) => {
+    if (data.key === "tab") {
+      const newTabs = Array.from({ length: data.numberOfTabs }, (_, index) => ({
+        label: `Tab${allTabs.length + index + 1}`,
+        value: `tab${allTabs.length + index + 1}`,
+        component: undefined,
+      }));
+      setAllTabs((prev) => [...prev, ...newTabs]);
+    } else if (data.key === "set") {
+      setAllTabs((prev) =>
+        prev.map((tab) => {
+          if (tab.value === `tab${data.numberOfTabs}`) {
+            return { ...tab, component: HomePage };
+          }
+          return tab;
+        })
+      );
+    }
+  };
+
+  const updateMessage = (newMessage: Message, data: any, Component: any) => {
+    setMessages((prev) =>
+      prev.map((msg) => {
+        if (msg.id === newMessage.id) {
+          return {
+            ...msg,
+            answer: data.value,
+            timeStamp: data.timestamp,
+            component: Component,
+            maindata: data.maindata,
+          };
+        }
+        return msg;
+      })
+    );
+  };
+
   const onSend = async () => {
     if (!question) return;
-    const newMessage: Message = {
-      id: messages.length + 1,
-      text: question,
-    };
+
+    const newMessage = MessageHandler.createNewMessage(
+      question,
+      messages.length
+    );
     setMessages((prev) => [...prev, newMessage]);
     setQuestion("");
+
     try {
-      const response = await fetch("http://localhost:5000/api/detect", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ text: question }),
-      });
-      const data = await response.json();
-
-      if (data.key) {
-        const Component = componentMap[data.key as keyof typeof componentMap];
-
-        if (data.key === "tab") {
-          // add N new empty tabs
-          const newTabs = Array.from(
-            { length: data.numberOfTabs },
-            (_, index) => ({
-              label: `Tab${allTabs.length + index + 1}`,
-              value: `tab${allTabs.length + index + 1}`,
-              component: undefined,
-            })
-          );
-          setAllTabs((prev) => [...prev, ...newTabs]);
-        } else if (data.key === "set") {
-          // assign HomePage to a specific tab
-          setAllTabs((prev) =>
-            prev.map((tab) =>
-              tab.value === `tab${data.numberOfTabs}`
-                ? { ...tab, component: HomePage }
-                : tab
-            )
-          );
-        }
-
-        // attach the answer/component to the message
-        setMessages((prev) =>
-          prev.map((msg) =>
-            msg.id === newMessage.id
-              ? {
-                  ...msg,
-                  answer: data.value,
-                  timeStamp: data.timestamp,
-                  component: Component,
-                  maindata: data.maindata,
-                }
-              : msg
-          )
-        );
+      const result = await MessageHandler.handleMessageSubmission(
+        question,
+        messages
+      );
+      if (result) {
+        const { data, Component } = result;
+        handleTabCreation(data);
+        updateMessage(newMessage, data, Component);
       }
     } catch (error) {
       console.error("Error fetching data:", error);
-      setMessages((prev) =>
-        prev.map((msg) =>
-          msg.id === newMessage.id
-            ? { ...msg, answer: "Error fetching data" }
-            : msg
-        )
-      );
+      updateMessage(newMessage, { value: "Error fetching data" }, null);
     }
   };
 
@@ -104,26 +85,21 @@ const App: React.FC = () => {
               key={tab.value}
               path={`/${tab.value}`}
               element={
-                tab.component ? (
-                  <tab.component
-                    question={question}
-                    setQuestion={setQuestion}
-                    messages={messages}
-                    onSend={onSend}
-                  />
-                ) : (
-                  <div>No Component Assigned</div>
-                )
+                <TabRoute
+                  tab={tab}
+                  question={question}
+                  setQuestion={setQuestion}
+                  messages={messages}
+                  onSend={onSend}
+                />
               }
             />
           ))}
 
-          {/* Optional: redirect root to first tab */}
           <Route
             path="/"
             element={<div>Please select a tab from the footer.</div>}
           />
-
           <Route path="*" element={<div>404 - Not Found</div>} />
         </Routes>
 

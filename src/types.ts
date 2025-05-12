@@ -1,3 +1,5 @@
+import { ComponentType } from "react";
+
 export interface Message {
   id: number; // ID from the mock server
   text: string; // The user’s question
@@ -7,3 +9,9 @@ export interface Message {
   maindata?: string; // The main data from the server
   // This is the data that will be passed to the component
 }
+
+export type TabConfig = {
+  label: string;
+  value: string;
+  component?: ComponentType<any>;
+};
