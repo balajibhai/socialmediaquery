@@ -1,12 +1,10 @@
 import { Typography } from "@mui/material";
-import { Message as MessageType } from "../../types";
+import { useContext } from "react";
+import { AppContext } from "../../context/AppContext";
 import MessageItem from "./MessageItem";
 
-type MessageListProps = {
-  messages: MessageType[];
-};
-
-const MessageList = ({ messages }: MessageListProps) => {
+const MessageList = () => {
+  const { messages } = useContext(AppContext)!;
   if (messages.length === 0) {
     return (
       <Typography variant="body1" color="textSecondary">

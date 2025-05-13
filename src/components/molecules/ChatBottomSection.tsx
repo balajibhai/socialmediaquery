@@ -1,14 +1,9 @@
 import { Box, Button, TextField } from "@mui/material";
-import React from "react";
+import { useContext } from "react";
+import { AppContext } from "../../context/AppContext";
 
-type ChatBottomSectionProps = {
-  question: string;
-  setQuestion: React.Dispatch<React.SetStateAction<string>>;
-  onSend: () => void;
-};
-
-const ChatBottomSection = (props: ChatBottomSectionProps) => {
-  const { question, setQuestion, onSend } = props;
+const ChatBottomSection = () => {
+  const { question, setQuestion, onSend } = useContext(AppContext)!;
   return (
     <Box
       style={{
