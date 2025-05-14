@@ -1,8 +1,12 @@
 // src/context/AppContext.tsx
 import React, { createContext, ReactNode, useState } from "react";
-import HomePage from "../pages/HomePage";
+import { useDispatch, useSelector } from "react-redux";
+import HomePage from "../components/pages/HomePage";
+import { AppDispatch, RootState } from "../redux/store";
+import { addComponent } from "../redux/tabsSlice";
 import { MessageHandler } from "../services/MessageHandler";
 import { Message, TabConfig } from "../types";
+import { parseComponentInput } from "../utils/parseComponentInput";
 
 interface AppContextType {
   question: string;
@@ -24,6 +28,8 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({
   const [allTabs, setAllTabs] = useState<TabConfig[]>([
     { label: "Tab1", value: "tab1", component: HomePage },
   ]);
+  const dispatch = useDispatch<AppDispatch>();
+  const activeKey = useSelector((s: RootState) => s.tabs.activeTabKey);
 
   const handleTabCreation = (data: any) => {
     if (data.key === "tab") {
@@ -46,6 +52,11 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({
 
   const onSend = async () => {
     if (!question) return;
+    const { type, data } = parseComponentInput(question);
+    if (activeKey) {
+      dispatch(addComponent({ key: activeKey, type, data }));
+    }
+
     const newMessage = MessageHandler.createNewMessage(
       question,
       messages.length

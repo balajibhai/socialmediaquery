@@ -4,6 +4,10 @@ import { AppContext } from "../../context/AppContext";
 
 const ChatBottomSection = () => {
   const { question, setQuestion, onSend } = useContext(AppContext)!;
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setQuestion(value);
+  };
   return (
     <Box
       style={{
@@ -19,7 +23,7 @@ const ChatBottomSection = () => {
         rows={2}
         placeholder="Ask something..."
         value={question}
-        onChange={(e) => setQuestion(e.target.value)}
+        onChange={handleChange}
         style={{ marginBottom: "8px" }}
         disabled={false}
       />

@@ -15,7 +15,7 @@ const PreviewPane: React.FC<PreviewPaneProps> = ({
   children,
 }) => (
   <Drawer anchor="right" open={open} onClose={onClose}>
-    <Box width={320} role="presentation">
+    <Box width={500} role="presentation">
       <PaneHeader title="Preview" onClose={onClose} />
       <Box p={2}>{children}</Box>
     </Box>

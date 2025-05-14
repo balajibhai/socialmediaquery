@@ -3,6 +3,7 @@ import MenuIcon from "@mui/icons-material/Menu";
 import { Box } from "@mui/material";
 import React, { useState } from "react";
 import IconButtonAtom from "../atoms/IconButtonAtom";
+import PreviewContent from "../molecules/PreviewContent";
 import PreviewPane from "../molecules/PreviewPane";
 
 interface MainLayoutProps {
@@ -31,7 +32,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
       {/* Right-side Preview drawer */}
       <PreviewPane open={isPreviewOpen} onClose={() => setPreviewOpen(false)}>
         {/* put any preview content here */}
-        <div>Here’s the preview content!</div>
+        <PreviewContent />
       </PreviewPane>
     </Box>
   );

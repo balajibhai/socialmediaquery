@@ -1,4 +1,4 @@
-import ChatInterface from "../components/organisms/ChatInterface";
+import ChatInterface from "../organisms/ChatInterface";
 
 const HomePage = () => {
   return (
