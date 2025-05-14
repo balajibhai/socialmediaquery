@@ -70,7 +70,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({
         messages
       );
       if (result) {
-        const { data, Component } = result;
+        const { data } = result;
         handleTabCreation(data);
         setMessages((prev) =>
           prev.map((m) =>
@@ -79,7 +79,6 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({
                   ...m,
                   answer: data.value,
                   timeStamp: data.timestamp,
-                  component: Component,
                   maindata: data.maindata,
                 }
               : m

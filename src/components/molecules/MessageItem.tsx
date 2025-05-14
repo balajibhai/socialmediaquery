@@ -1,5 +1,4 @@
 import { Box, Typography } from "@mui/material";
-import React from "react";
 import { Message } from "../../types";
 
 type MessageItemProps = {
@@ -19,9 +18,6 @@ const MessageItem = ({ message }: MessageItemProps) => {
         <Typography variant="body2" style={{ marginLeft: "8px" }}>
           {message.timeStamp}
         </Typography>
-        {message.component &&
-          message.maindata &&
-          React.createElement(message.component, { text: message.maindata })}
       </Box>
     </Box>
   );

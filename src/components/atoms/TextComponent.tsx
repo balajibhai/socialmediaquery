@@ -1,10 +1,21 @@
+import { DataPoint } from "../../redux/tabsSlice";
+
 type TextComponentProps = {
-  text: string;
+  data: DataPoint[];
 };
 
 const TextComponent = (props: TextComponentProps) => {
-  const { text } = props;
-  return <div>{text}</div>;
+  const { data } = props;
+  return (
+    <div>
+      {data.map((item, index) => (
+        <div key={index}>
+          <p>Date: {item.date}</p>
+          <p>Distance: {item.distance}</p>
+        </div>
+      ))}
+    </div>
+  );
 };
 
 export default TextComponent;
