@@ -1,25 +1,30 @@
 // src/components/molecules/PreviewPane.tsx
-import { Box, Drawer } from "@mui/material";
+import { Box } from "@mui/material";
 import React from "react";
-import PaneHeader from "./PaneHeader";
 
 interface PreviewPaneProps {
   open: boolean;
-  onClose: () => void;
   children?: React.ReactNode;
 }
 
-const PreviewPane: React.FC<PreviewPaneProps> = ({
-  open,
-  onClose,
-  children,
-}) => (
-  <Drawer anchor="right" open={open} onClose={onClose}>
-    <Box width={500} role="presentation">
-      <PaneHeader title="Preview" onClose={onClose} />
-      <Box p={2}>{children}</Box>
-    </Box>
-  </Drawer>
+const PreviewPane: React.FC<PreviewPaneProps> = ({ open, children }) => (
+  <Box
+    sx={{
+      position: "fixed",
+      right: open ? 0 : "-500px",
+      top: 0,
+      height: "93%",
+      width: 400,
+      bgcolor: "background.paper",
+      boxShadow: "-2px 0 8px rgba(0,0,0,0.15)",
+      transition: "right 0.3s ease-in-out",
+      zIndex: 1200,
+      overflow: "auto",
+    }}
+    role="presentation"
+  >
+    <Box p={2}>{children}</Box>
+  </Box>
 );
 
 export default PreviewPane;

@@ -11,7 +11,7 @@ const ChatInterface = () => {
         height: "100vh",
       }}
     >
-      <h1 style={{ textAlign: "center" }}>Dynamic component chat</h1>
+      <h1>Dynamic component chat</h1>
       <ChatMiddleSection />
       <ChatBottomSection />
     </Box>

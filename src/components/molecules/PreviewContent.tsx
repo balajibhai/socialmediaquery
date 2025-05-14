@@ -8,6 +8,7 @@ const PreviewContent = () => {
 
   return (
     <div>
+      <h3>Preview</h3>
       {tabsRedux.tabs.map((tab: Tab) => (
         <div key={tab.key}>
           {tab.components.map((component) => {

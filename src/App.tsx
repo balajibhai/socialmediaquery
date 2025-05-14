@@ -3,7 +3,7 @@ import React, { useContext } from "react";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import FooterTabs from "./components/molecules/FooterTabs";
 import TabRoute from "./components/molecules/TabRoute";
-import MainLayout from "./components/organisms/MainLayout"; // ← make sure this path is correct
+import PreviewSection from "./components/organisms/PreviewSection";
 import { AppContext } from "./context/AppContext";
 
 const App: React.FC = () => {
@@ -11,38 +11,37 @@ const App: React.FC = () => {
 
   return (
     <BrowserRouter>
-      <MainLayout>
-        <Routes>
-          {ctx.allTabs.map((tab) => (
-            <Route
-              key={tab.value}
-              path={`/${tab.value}`}
-              element={
-                <TabRoute
-                  tab={tab}
-                  question={ctx.question}
-                  setQuestion={ctx.setQuestion}
-                  messages={ctx.messages}
-                  onSend={ctx.onSend}
-                />
-              }
-            />
-          ))}
+      <Routes>
+        {ctx.allTabs.map((tab) => (
           <Route
-            path="/"
-            element={<div>Please select a tab from the footer.</div>}
+            key={tab.value}
+            path={`/${tab.value}`}
+            element={
+              <TabRoute
+                tab={tab}
+                question={ctx.question}
+                setQuestion={ctx.setQuestion}
+                messages={ctx.messages}
+                onSend={ctx.onSend}
+              />
+            }
           />
-          <Route path="*" element={<div>404 - Not Found</div>} />
-        </Routes>
+        ))}
+        <Route
+          path="/"
+          element={<div>Please select a tab from the footer.</div>}
+        />
+        <Route path="*" element={<div>404 - Not Found</div>} />
+      </Routes>
+      <PreviewSection />
 
-        <div style={{ paddingBottom: 56 }}>
-          <FooterTabs
-            defaultTab="tab1"
-            onChange={(t) => null}
-            tabs={ctx.allTabs}
-          />
-        </div>
-      </MainLayout>
+      <div style={{ paddingBottom: 56 }}>
+        <FooterTabs
+          defaultTab="tab1"
+          onChange={(t) => null}
+          tabs={ctx.allTabs}
+        />
+      </div>
     </BrowserRouter>
   );
 };

@@ -14,6 +14,7 @@ const ChatBottomSection = () => {
         padding: "16px",
         borderTop: "1px solid #ccc",
         backgroundColor: "#fff",
+        width: "50%",
       }}
     >
       <TextField
