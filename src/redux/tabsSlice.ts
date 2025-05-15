@@ -42,17 +42,6 @@ const tabsSlice = createSlice({
   name: "tabs",
   initialState,
   reducers: {
-    addTab(state, action: PayloadAction<{ key: string }>) {
-      state.tabs.push({ key: action.payload.key, components: [] });
-    },
-
-    removeTab(state, action: PayloadAction<{ key: string }>) {
-      state.tabs = state.tabs.filter((t) => t.key !== action.payload.key);
-      if (state.activeTabKey === action.payload.key) {
-        state.activeTabKey = state.tabs[0]?.key ?? null;
-      }
-    },
-
     selectTab(state, action: PayloadAction<{ key: string }>) {
       state.activeTabKey = action.payload.key;
     },
@@ -89,21 +78,15 @@ const tabsSlice = createSlice({
       }
     },
 
-    removeComponent(state, action: PayloadAction<{ key: string; id: string }>) {
+    removeComponent(state, action: PayloadAction<{ key: string }>) {
       const tab = state.tabs.find((t) => t.key === action.payload.key);
       if (!tab) return;
-      tab.components = tab.components.filter((c) => c.id !== action.payload.id);
+      tab.components = [];
     },
   },
 });
 
-export const {
-  addTab,
-  removeTab,
-  selectTab,
-  addComponent,
-  updateComponent,
-  removeComponent,
-} = tabsSlice.actions;
+export const { selectTab, addComponent, updateComponent, removeComponent } =
+  tabsSlice.actions;
 
 export default tabsSlice.reducer;

@@ -1,13 +1,16 @@
 // src/App.tsx
 import React, { useContext } from "react";
+import { useSelector } from "react-redux";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import FooterTabs from "./components/molecules/FooterTabs";
 import TabRoute from "./components/molecules/TabRoute";
 import PreviewSection from "./components/organisms/PreviewSection";
 import { AppContext } from "./context/AppContext";
+import { RootState } from "./redux/store";
 
 const App: React.FC = () => {
   const ctx = useContext(AppContext)!; // non-null because we wrap in provider
+  const activeKey = useSelector((s: RootState) => s.tabs.activeTabKey);
 
   return (
     <BrowserRouter>
@@ -33,7 +36,7 @@ const App: React.FC = () => {
         />
         <Route path="*" element={<div>404 - Not Found</div>} />
       </Routes>
-      <PreviewSection />
+      {activeKey === "tab1" && <PreviewSection />}
 
       <div style={{ paddingBottom: 56 }}>
         <FooterTabs

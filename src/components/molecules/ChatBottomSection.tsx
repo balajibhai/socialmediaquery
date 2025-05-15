@@ -1,6 +1,7 @@
 import { Box, Button, TextField } from "@mui/material";
 import { useContext } from "react";
 import { AppContext } from "../../context/AppContext";
+import FloatingButton from "../atoms/FloatingButton";
 
 const ChatBottomSection = () => {
   const { question, setQuestion, onSend } = useContext(AppContext)!;
@@ -28,6 +29,7 @@ const ChatBottomSection = () => {
         style={{ marginBottom: "8px" }}
         disabled={false}
       />
+      <FloatingButton />
       <Button
         variant="contained"
         color="primary"

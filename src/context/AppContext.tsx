@@ -14,6 +14,7 @@ interface AppContextType {
   messages: Message[];
   onSend: () => Promise<void>;
   allTabs: TabConfig[];
+  setMessages: (m: Message[]) => void;
   // you can expose these if you need them elsewhere:
   handleTabCreation: (data: any) => void;
 }
@@ -52,9 +53,12 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({
 
   const onSend = async () => {
     if (!question) return;
-    const { type, data } = parseComponentInput(question);
-    if (activeKey) {
-      dispatch(addComponent({ key: activeKey, type, data }));
+
+    if (!question.toLowerCase().includes("tabs")) {
+      const { type, data } = parseComponentInput(question);
+      if (activeKey) {
+        dispatch(addComponent({ key: activeKey, type, data }));
+      }
     }
 
     const newMessage = MessageHandler.createNewMessage(
@@ -104,6 +108,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({
         onSend,
         allTabs,
         handleTabCreation,
+        setMessages,
       }}
     >
       {children}
