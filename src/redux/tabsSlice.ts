@@ -83,10 +83,38 @@ const tabsSlice = createSlice({
       if (!tab) return;
       tab.components = [];
     },
+
+    // New reducer: move all components from tabs[0] into the tab with the given key
+    mergeHomeTabComponents(state, action: PayloadAction<{ key: string }>) {
+      const { key } = action.payload;
+      const homeComponents = state.tabs[0].components;
+
+      // find existing tab
+      let targetTab = state.tabs.find((t) => t.key === key);
+
+      if (!targetTab) {
+        // create new tab with those components
+        state.tabs.push({
+          key,
+          components: [...homeComponents],
+        });
+      } else {
+        // append to existing tab's components
+        targetTab.components.push(...homeComponents);
+      }
+
+      // clear the home tab's components
+      state.tabs[0].components = [];
+    },
   },
 });
 
-export const { selectTab, homeTabComponent, updateComponent, removeComponent } =
-  tabsSlice.actions;
+export const {
+  selectTab,
+  homeTabComponent,
+  updateComponent,
+  removeComponent,
+  mergeHomeTabComponents,
+} = tabsSlice.actions;
 
 export default tabsSlice.reducer;

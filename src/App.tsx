@@ -11,6 +11,8 @@ import { RootState } from "./redux/store";
 const App: React.FC = () => {
   const ctx = useContext(AppContext)!; // non-null because we wrap in provider
   const activeKey = useSelector((s: RootState) => s.tabs.activeTabKey);
+  const tabsRedux = useSelector((s: RootState) => s.tabs);
+  console.log("tabsRedux: ", tabsRedux);
 
   return (
     <BrowserRouter>
