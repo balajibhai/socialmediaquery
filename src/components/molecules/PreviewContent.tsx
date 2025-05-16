@@ -1,7 +1,6 @@
 import { useSelector } from "react-redux";
 import { componentMap } from "../../constants";
 import { RootState } from "../../redux/store";
-import { Tab } from "../../redux/tabsSlice";
 
 const PreviewContent = () => {
   const tabsRedux = useSelector((s: RootState) => s.tabs);
@@ -9,18 +8,14 @@ const PreviewContent = () => {
   return (
     <div>
       <h3>Preview</h3>
-      {tabsRedux.tabs.map((tab: Tab) => (
-        <div key={tab.key}>
-          {tab.components.map((component) => {
-            if (!component.data) return null;
+      {tabsRedux.tabs[0].components.map((component) => {
+        if (!component.data) return null;
 
-            const Component = componentMap[component.type];
-            if (!Component) return null;
+        const Component = componentMap[component.type];
+        if (!Component) return null;
 
-            return <Component key={component.id} data={component.data} />;
-          })}
-        </div>
-      ))}
+        return <Component key={component.id} data={component.data} />;
+      })}
     </div>
   );
 };

@@ -1,6 +1,8 @@
 import { Box, Button, TextField } from "@mui/material";
 import { useContext } from "react";
+import { useSelector } from "react-redux";
 import { AppContext } from "../../context/AppContext";
+import { RootState } from "../../redux/store";
 import FloatingButton from "../atoms/FloatingButton";
 
 const ChatBottomSection = () => {
@@ -9,6 +11,8 @@ const ChatBottomSection = () => {
     const value = e.target.value;
     setQuestion(value);
   };
+  const activeKey = useSelector((s: RootState) => s.tabs.activeTabKey);
+
   return (
     <Box
       style={{
@@ -29,7 +33,7 @@ const ChatBottomSection = () => {
         style={{ marginBottom: "8px" }}
         disabled={false}
       />
-      <FloatingButton />
+      {activeKey === "tab1" && <FloatingButton />}
       <Button
         variant="contained"
         color="primary"
