@@ -5,7 +5,7 @@
  * and an array of { date, distance } objects.
  *
  * @param {string} input
- * @returns {{ type: 'graph'|'table'|'text', data: Array<{date: string, distance: number}> }}
+ * @returns {{ type: 'graph'|'table'|'text', format: Array<{date: string, distance: number}> }}
  */
 export function parseComponentInput(input) {
   // 1) detect the component type
@@ -16,16 +16,16 @@ export function parseComponentInput(input) {
   const type = typeMatch[1].toLowerCase();
 
   // 2) pull out all "date: ... distance: ..." lines
-  const data = [];
+  const format = [];
   const lineRegex =
     /date:\s*(\d{1,2}\/\d{1,2}\/\d{4})\s*distance:\s*(\d+(\.\d+)?)/gi;
   let m;
   while ((m = lineRegex.exec(input)) !== null) {
-    data.push({
+    format.push({
       date: m[1],
       distance: Number(m[2]),
     });
   }
 
-  return { type, data };
+  return { type, format };
 }

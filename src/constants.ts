@@ -7,3 +7,11 @@ export const componentMap = {
   graph: GraphComponent,
   text: TextComponent,
 };
+
+export const MessageComponent = {
+  TABLE: "table",
+  TEXT: "text",
+  GRAPH: "graph",
+  TAB: "tab",
+  SET: "set",
+};

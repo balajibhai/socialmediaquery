@@ -2,9 +2,9 @@ import CloseIcon from "@mui/icons-material/Close";
 import { Fab } from "@mui/material";
 import { styled } from "@mui/system";
 import { useContext } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { AppContext } from "../../context/AppContext";
-import { AppDispatch, RootState } from "../../redux/store";
+import { AppDispatch } from "../../redux/store";
 import { removeComponent } from "../../redux/tabsSlice";
 
 const StyledFab = styled(Fab)({
@@ -16,13 +16,10 @@ const StyledFab = styled(Fab)({
 
 const FloatingButton = () => {
   const dispatch = useDispatch<AppDispatch>();
-  const activeKey = useSelector((s: RootState) => s.tabs.activeTabKey);
   const { setMessages } = useContext(AppContext)!;
 
   const onClear = () => {
-    if (activeKey) {
-      dispatch(removeComponent({ key: activeKey }));
-    }
+    dispatch(removeComponent({ key: "tab1" }));
     setMessages([]);
   };
   return (

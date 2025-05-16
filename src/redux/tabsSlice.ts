@@ -46,7 +46,7 @@ const tabsSlice = createSlice({
       state.activeTabKey = action.payload.key;
     },
 
-    addComponent(
+    homeTabComponent(
       state,
       action: PayloadAction<{
         key: string;
@@ -86,7 +86,7 @@ const tabsSlice = createSlice({
   },
 });
 
-export const { selectTab, addComponent, updateComponent, removeComponent } =
+export const { selectTab, homeTabComponent, updateComponent, removeComponent } =
   tabsSlice.actions;
 
 export default tabsSlice.reducer;

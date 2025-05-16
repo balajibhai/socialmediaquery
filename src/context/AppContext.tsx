@@ -2,8 +2,9 @@
 import React, { createContext, ReactNode, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import HomePage from "../components/pages/HomePage";
+import { MessageComponent } from "../constants";
 import { AppDispatch, RootState } from "../redux/store";
-import { addComponent } from "../redux/tabsSlice";
+import { homeTabComponent } from "../redux/tabsSlice";
 import { MessageHandler } from "../services/MessageHandler";
 import { Message, TabConfig } from "../types";
 import { parseComponentInput } from "../utils/parseComponentInput";
@@ -30,7 +31,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({
     { label: "Tab1", value: "tab1", component: HomePage },
   ]);
   const dispatch = useDispatch<AppDispatch>();
-  const activeKey = useSelector((s: RootState) => s.tabs.activeTabKey);
+  const tabsRedux = useSelector((s: RootState) => s.tabs);
 
   const handleTabCreation = (data: any) => {
     if (data.key === "tab") {
@@ -54,13 +55,6 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({
   const onSend = async () => {
     if (!question) return;
 
-    if (!question.toLowerCase().includes("tabs")) {
-      const { type, data } = parseComponentInput(question);
-      if (activeKey) {
-        dispatch(addComponent({ key: activeKey, type, data }));
-      }
-    }
-
     const newMessage = MessageHandler.createNewMessage(
       question,
       messages.length
@@ -75,6 +69,14 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({
       );
       if (result) {
         const { data } = result;
+        if (data.key !== MessageComponent.TAB) {
+          const { type, format } = parseComponentInput(question);
+          dispatch(homeTabComponent({ key: "tab1", type, data: format }));
+        }
+        // if (data.value === MessageComponent.SET) {
+        //   const hometab = tabsRedux.tabs[0];
+        //   dispatch(homeTabComponent({ key: `tab${data.numberOfTabs}`, type, data:  }));
+        // }
         handleTabCreation(data);
         setMessages((prev) =>
           prev.map((m) =>
