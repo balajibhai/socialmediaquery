@@ -12,4 +12,5 @@ export type TabConfig = {
   label: string;
   value: string;
   component?: ComponentType<any>;
+  currentTab?: Number;
 };

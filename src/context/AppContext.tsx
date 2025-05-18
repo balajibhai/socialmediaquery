@@ -28,7 +28,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({
   const [question, setQuestion] = useState<string>("");
   const [messages, setMessages] = useState<Message[]>([]);
   const [allTabs, setAllTabs] = useState<TabConfig[]>([
-    { label: "Tab1", value: "tab1", component: HomePage },
+    { label: "Tab1", value: "tab1", component: HomePage, currentTab: 0 },
   ]);
   const dispatch = useDispatch<AppDispatch>();
 
@@ -44,7 +44,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({
       setAllTabs((prev) =>
         prev.map((t) =>
           t.value === `tab${data.numberOfTabs}`
-            ? { ...t, component: HomePage }
+            ? { ...t, currentTab: data.numberOfTabs }
             : t
         )
       );
