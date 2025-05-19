@@ -1,12 +1,7 @@
 // src/components/organisms/MainLayout.tsx
 import { Box } from "@mui/material";
-import React from "react";
-import PreviewContent from "../molecules/PreviewContent";
+import DynamicComponent from "../molecules/DynamicComponent";
 import PreviewPane from "../molecules/PreviewPane";
-
-interface MainLayoutProps {
-  children: React.ReactNode;
-}
 
 const PreviewSection = () => {
   return (
@@ -14,7 +9,7 @@ const PreviewSection = () => {
       {/* Right-side Preview drawer */}
       <PreviewPane open={true}>
         {/* put any preview content here */}
-        <PreviewContent />
+        <DynamicComponent currentTabNumber={1} header="Preview" />
       </PreviewPane>
     </Box>
   );

@@ -1,5 +1,6 @@
 import React from "react";
 import { Message, TabConfig } from "../../types";
+import DynamicComponent from "./DynamicComponent";
 
 interface TabRouteProps {
   tab: TabConfig;
@@ -25,6 +26,8 @@ const TabRoute: React.FC<TabRouteProps> = ({
         onSend={onSend}
       />
     );
+  } else if (tab.currentTab) {
+    return <DynamicComponent currentTabNumber={tab.currentTab} />;
   }
 
   return <div>No Component Assigned</div>;
