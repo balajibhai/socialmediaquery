@@ -2,7 +2,10 @@ import CloseIcon from "@mui/icons-material/Close";
 import { Fab } from "@mui/material";
 import { styled } from "@mui/system";
 import { useContext } from "react";
+import { useDispatch } from "react-redux";
 import { AppContext } from "../../context/AppContext";
+import { AppDispatch } from "../../redux/store";
+import { toggle } from "../../redux/toggleSlice";
 import { clearComponents } from "../../services/tabsService";
 
 const StyledFab = styled(Fab)({
@@ -14,9 +17,11 @@ const StyledFab = styled(Fab)({
 
 const FloatingButton = () => {
   const { setMessages } = useContext(AppContext)!;
+  const dispatch = useDispatch<AppDispatch>();
 
-  const onClear = () => {
-    clearComponents("tab1");
+  const onClear = async () => {
+    await clearComponents("tab1");
+    dispatch(toggle());
     setMessages([]);
   };
   return (
