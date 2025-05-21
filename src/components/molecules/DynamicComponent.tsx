@@ -1,6 +1,7 @@
-import { useSelector } from "react-redux";
+import { useEffect, useState } from "react";
 import { componentMap } from "../../constants";
-import { RootState } from "../../redux/store";
+import { Tab } from "../../redux/tabsSlice";
+import { fetchState } from "../../services/tabsService";
 
 type PreviewContentProps = {
   currentTabNumber: number;
@@ -9,7 +10,12 @@ type PreviewContentProps = {
 
 const DynamicComponent = (props: PreviewContentProps) => {
   const { currentTabNumber, header } = props;
-  const { tabs } = useSelector((s: RootState) => s.tabs);
+  const [tabs, setTabs] = useState<Tab[]>([]);
+  useEffect(() => {
+    fetchState().then((data) => {
+      setTabs(data.tabs);
+    });
+  }, []);
   const tabKey = `tab${currentTabNumber}`;
   const currentTab = tabs.find((t) => t.key === tabKey);
 

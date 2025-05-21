@@ -4,8 +4,8 @@ import { useDispatch } from "react-redux";
 import HomePage from "../components/pages/HomePage";
 import { MessageComponent } from "../constants";
 import { AppDispatch } from "../redux/store";
-import { homeTabComponent, mergeHomeTabComponents } from "../redux/tabsSlice";
 import { MessageHandler } from "../services/MessageHandler";
+import { addComponent, mergeHome } from "../services/tabsService";
 import { Message, TabConfig } from "../types";
 import { parseComponentInput } from "../utils/parseComponentInput";
 
@@ -73,10 +73,10 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({
           data.key !== MessageComponent.SET
         ) {
           const { type, format } = parseComponentInput(question);
-          dispatch(homeTabComponent({ key: "tab1", type, data: format }));
+          addComponent("tab1", type, format);
         }
         if (data.key === MessageComponent.SET) {
-          dispatch(mergeHomeTabComponents({ key: `tab${data.numberOfTabs}` }));
+          mergeHome(`tab${data.numberOfTabs}`);
         }
         handleTabCreation(data);
         setMessages((prev) =>

@@ -1,19 +1,27 @@
 // src/App.tsx
-import React, { useContext } from "react";
-import { useSelector } from "react-redux";
-import { BrowserRouter, Route, Routes } from "react-router-dom";
+import React, { useContext, useEffect, useState } from "react";
+import { BrowserRouter, Route, Routes, useNavigate } from "react-router-dom";
 import FooterTabs from "./components/molecules/FooterTabs";
 import TabRoute from "./components/molecules/TabRoute";
 import PreviewSection from "./components/organisms/PreviewSection";
 import { AppContext } from "./context/AppContext";
-import { RootState } from "./redux/store";
+import { fetchState } from "./services/tabsService";
 
-const App: React.FC = () => {
-  const ctx = useContext(AppContext)!; // non-null because we wrap in provider
-  const activeKey = useSelector((s: RootState) => s.tabs.activeTabKey);
+const AppContent: React.FC = () => {
+  const ctx = useContext(AppContext)!;
+  const [activeTabKey, setActiveTabKey] = useState<string>("tab1");
+  const navigate = useNavigate();
+
+  // on mount, pull initial tab from backend
+  useEffect(() => {
+    fetchState().then((state) => {
+      setActiveTabKey(state.activeTabKey);
+      navigate(`/${state.activeTabKey}`, { replace: true });
+    });
+  }, [navigate]);
 
   return (
-    <BrowserRouter>
+    <>
       <Routes>
         {ctx.allTabs.map((tab) => (
           <Route
@@ -36,17 +44,24 @@ const App: React.FC = () => {
         />
         <Route path="*" element={<div>404 - Not Found</div>} />
       </Routes>
-      {activeKey === "tab1" && <PreviewSection />}
+
+      {activeTabKey === "tab1" && <PreviewSection />}
 
       <div style={{ paddingBottom: 56 }}>
         <FooterTabs
-          defaultTab="tab1"
-          onChange={(t) => null}
           tabs={ctx.allTabs}
+          value={activeTabKey} // pass current tab here
+          onChange={(newKey) => setActiveTabKey(newKey)}
         />
       </div>
-    </BrowserRouter>
+    </>
   );
 };
+
+const App: React.FC = () => (
+  <BrowserRouter>
+    <AppContent />
+  </BrowserRouter>
+);
 
 export default App;
