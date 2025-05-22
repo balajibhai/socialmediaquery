@@ -3,7 +3,7 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { nanoid } from "nanoid";
 
 // Each component type
-export type ComponentType = "graph" | "table" | "text";
+export type ComponentType = "GRAPH" | "TABLE" | "TEXT";
 
 // Payload for a single data point
 export interface DataPoint {
