@@ -32,6 +32,26 @@ ChartJS.register(
   Legend
 );
 
+const OPTIONS = {
+  responsive: true,
+  plugins: {
+    legend: { position: "top" as const },
+    title: {
+      display: true,
+      text: "Running Log",
+    },
+  },
+  scales: {
+    x: {
+      title: { display: true, text: "Date" },
+    },
+    y: {
+      title: { display: true, text: "KM" },
+      beginAtZero: true,
+    },
+  },
+};
+
 const GraphComponent: React.FC<GraphComponentProps> = (
   props: GraphComponentProps
 ) => {
@@ -49,30 +69,10 @@ const GraphComponent: React.FC<GraphComponentProps> = (
     ],
   };
 
-  const options = {
-    responsive: true,
-    plugins: {
-      legend: { position: "top" as const },
-      title: {
-        display: true,
-        text: "Running Log",
-      },
-    },
-    scales: {
-      x: {
-        title: { display: true, text: "Date" },
-      },
-      y: {
-        title: { display: true, text: "KM" },
-        beginAtZero: true,
-      },
-    },
-  };
-
   return (
     <div style={{ width: "110%", margin: "2rem auto" }}>
       {data.length > 0 ? (
-        <Line data={chartData} options={options} />
+        <Line data={chartData} options={OPTIONS} />
       ) : (
         <p>
           Paste your running log (e.g. <code>date: 12/03/2021 distance: 3</code>

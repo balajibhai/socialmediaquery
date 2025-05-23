@@ -17,6 +17,9 @@ const TabRoute: React.FC<TabRouteProps> = ({
   messages,
   onSend,
 }) => {
+  // TODO: if tab.component or tab.component is going to decide what to render here
+  // why do we need this component? tab.currentTab exists, then tab.component=DynamicComponent
+  // will the above logic work?
   if (tab.component) {
     return (
       <tab.component

@@ -1,21 +1,14 @@
 // src/store/tabsSlice.ts
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { nanoid } from "nanoid";
+import * as tabsService from "../services/tabsService";
 
-// Each component type
-export type ComponentType = "GRAPH" | "TABLE" | "TEXT";
+export type ComponentType = tabsService.ComponentType;
 
-// Payload for a single data point
-export interface DataPoint {
-  date: string;
-  distance: number;
-}
-
-// A component holds an array of data points
 export interface Component {
   id: string;
   type: ComponentType;
-  data: DataPoint[];
+  data: tabsService.DataPoint[];
 }
 
 export interface Tab {
@@ -25,33 +18,121 @@ export interface Tab {
 
 export interface TabsState {
   tabs: Tab[];
-  activeTabKey: string | null;
+  activeTabKey: string;
+  loading: boolean;
+  error: string | null;
 }
 
 const initialState: TabsState = {
-  tabs: [
-    {
-      key: "tab1",
-      components: [],
-    },
-  ],
+  tabs: [{ key: "tab1", components: [] }],
   activeTabKey: "tab1",
+  loading: false,
+  error: null,
 };
+
+// ----- THUNKS -----
+
+export const loadTabs = createAsyncThunk(
+  "tabs/loadAll",
+  async (_, thunkAPI) => {
+    try {
+      return await tabsService.fetchState();
+    } catch (err: any) {
+      return thunkAPI.rejectWithValue(err.message);
+    }
+  }
+);
+
+export const createComponent = createAsyncThunk(
+  "tabs/addComponent",
+  async (
+    payload: {
+      key: string;
+      type: ComponentType;
+      data: tabsService.DataPoint[];
+    },
+    thunkAPI
+  ) => {
+    try {
+      return await tabsService.addComponent(
+        payload.key,
+        payload.type,
+        payload.data
+      );
+    } catch (err: any) {
+      return thunkAPI.rejectWithValue(err.message);
+    }
+  }
+);
+
+export const modifyComponent = createAsyncThunk(
+  "tabs/updateComponent",
+  async (
+    payload: { id: string; key: string; data: tabsService.DataPoint[] },
+    thunkAPI
+  ) => {
+    try {
+      return await tabsService.updateComponent(
+        payload.id,
+        payload.key,
+        payload.data
+      );
+    } catch (err: any) {
+      return thunkAPI.rejectWithValue(err.message);
+    }
+  }
+);
+
+export const clearTabComponents = createAsyncThunk(
+  "tabs/clearComponents",
+  async (key: string, thunkAPI) => {
+    try {
+      await tabsService.clearComponents(key);
+      return key;
+    } catch (err: any) {
+      return thunkAPI.rejectWithValue(err.message);
+    }
+  }
+);
+
+export const mergeHomeComponents = createAsyncThunk(
+  "tabs/mergeHome",
+  async (key: string, thunkAPI) => {
+    try {
+      return await tabsService.mergeHome(key);
+    } catch (err: any) {
+      return thunkAPI.rejectWithValue(err.message);
+    }
+  }
+);
+
+export const changeActiveTab = createAsyncThunk(
+  "tabs/setActive",
+  async (key: string, thunkAPI) => {
+    try {
+      await tabsService.setActiveTab(key);
+      return key;
+    } catch (err: any) {
+      return thunkAPI.rejectWithValue(err.message);
+    }
+  }
+);
+
+// ----- SLICE -----
 
 const tabsSlice = createSlice({
   name: "tabs",
   initialState,
   reducers: {
-    selectTab(state, action: PayloadAction<{ key: string }>) {
+    selectTabLocal(state, action: PayloadAction<{ key: string }>) {
       state.activeTabKey = action.payload.key;
     },
-
-    homeTabComponent(
+    homeTabComponentLocal(
       state,
       action: PayloadAction<{
         key: string;
         type: ComponentType;
-        data: DataPoint[];
+        data: tabsService.DataPoint[];
       }>
     ) {
       const tab = state.tabs.find((t) => t.key === action.payload.key);
@@ -62,59 +143,105 @@ const tabsSlice = createSlice({
         data: action.payload.data,
       });
     },
+  },
+  extraReducers: (builder) => {
+    builder
+      // LOAD ALL
+      .addCase(loadTabs.pending, (s) => {
+        s.loading = true;
+        s.error = null;
+      })
+      .addCase(loadTabs.fulfilled, (s, { payload }) => {
+        s.loading = false;
+        s.tabs = payload.tabs;
+        s.activeTabKey = payload.activeTabKey;
+      })
+      .addCase(loadTabs.rejected, (s, { payload }) => {
+        s.loading = false;
+        s.error = payload as string;
+      })
 
-    updateComponent(
-      state,
-      action: PayloadAction<{
-        key: string;
-        id: string;
-        data: DataPoint[];
-      }>
-    ) {
-      const tab = state.tabs.find((t) => t.key === action.payload.key);
-      const comp = tab?.components.find((c) => c.id === action.payload.id);
-      if (comp) {
-        comp.data = action.payload.data;
-      }
-    },
+      // CREATE COMPONENT
+      .addCase(createComponent.pending, (s) => {
+        s.loading = true;
+        s.error = null;
+      })
+      .addCase(createComponent.fulfilled, (s, { payload }) => {
+        s.loading = false;
+        // replace that tab in state
+        const idx = s.tabs.findIndex((t) => t.key === payload.key);
+        if (idx >= 0) s.tabs[idx] = payload;
+        else s.tabs.push(payload);
+      })
+      .addCase(createComponent.rejected, (s, { payload }) => {
+        s.loading = false;
+        s.error = payload as string;
+      })
 
-    removeComponent(state, action: PayloadAction<{ key: string }>) {
-      const tab = state.tabs.find((t) => t.key === action.payload.key);
-      if (!tab) return;
-      tab.components = [];
-    },
+      // UPDATE COMPONENT
+      .addCase(modifyComponent.pending, (s) => {
+        s.loading = true;
+        s.error = null;
+      })
+      .addCase(modifyComponent.fulfilled, (s, { payload }) => {
+        s.loading = false;
+        const idx = s.tabs.findIndex((t) => t.key === payload.key);
+        if (idx >= 0) s.tabs[idx] = payload;
+      })
+      .addCase(modifyComponent.rejected, (s, { payload }) => {
+        s.loading = false;
+        s.error = payload as string;
+      })
 
-    // New reducer: move all components from tabs[0] into the tab with the given key
-    mergeHomeTabComponents(state, action: PayloadAction<{ key: string }>) {
-      const { key } = action.payload;
-      const homeComponents = state.tabs[0].components;
+      // CLEAR COMPONENTS
+      .addCase(clearTabComponents.pending, (s) => {
+        s.loading = true;
+        s.error = null;
+      })
+      .addCase(clearTabComponents.fulfilled, (s, { payload: key }) => {
+        s.loading = false;
+        const tab = s.tabs.find((t) => t.key === key);
+        if (tab) tab.components = [];
+      })
+      .addCase(clearTabComponents.rejected, (s, { payload }) => {
+        s.loading = false;
+        s.error = payload as string;
+      })
 
-      // find existing tab
-      let targetTab = state.tabs.find((t) => t.key === key);
+      // MERGE HOME
+      .addCase(mergeHomeComponents.pending, (s) => {
+        s.loading = true;
+        s.error = null;
+      })
+      .addCase(mergeHomeComponents.fulfilled, (s, { payload }) => {
+        s.loading = false;
+        const idx = s.tabs.findIndex((t) => t.key === payload.key);
+        if (idx >= 0) s.tabs[idx] = payload;
+        else s.tabs.push(payload);
+        // clear home
+        const home = s.tabs[0];
+        if (home) home.components = [];
+      })
+      .addCase(mergeHomeComponents.rejected, (s, { payload }) => {
+        s.loading = false;
+        s.error = payload as string;
+      })
 
-      if (!targetTab) {
-        // create new tab with those components
-        state.tabs.push({
-          key,
-          components: [...homeComponents],
-        });
-      } else {
-        // append to existing tab's components
-        targetTab.components.push(...homeComponents);
-      }
-
-      // clear the home tab's components
-      state.tabs[0].components = [];
-    },
+      // SET ACTIVE TAB
+      .addCase(changeActiveTab.pending, (s) => {
+        s.loading = true;
+        s.error = null;
+      })
+      .addCase(changeActiveTab.fulfilled, (s, { payload: key }) => {
+        s.loading = false;
+        s.activeTabKey = key;
+      })
+      .addCase(changeActiveTab.rejected, (s, { payload }) => {
+        s.loading = false;
+        s.error = payload as string;
+      });
   },
 });
 
-export const {
-  selectTab,
-  homeTabComponent,
-  updateComponent,
-  removeComponent,
-  mergeHomeTabComponents,
-} = tabsSlice.actions;
-
+export const { selectTabLocal, homeTabComponentLocal } = tabsSlice.actions;
 export default tabsSlice.reducer;

@@ -1,11 +1,9 @@
 import { configureStore } from "@reduxjs/toolkit";
 import tabsReducer from "./tabsSlice";
-import toggleReducer from "./toggleSlice";
 
 export const store = configureStore({
   reducer: {
     tabs: tabsReducer,
-    toggle: toggleReducer,
   },
 });
 
