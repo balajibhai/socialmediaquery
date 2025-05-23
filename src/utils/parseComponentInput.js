@@ -5,11 +5,11 @@
  * and an array of { date, distance } objects.
  *
  * @param {string} input
- * @returns {{ type: 'graph'|'table'|'text', format: Array<{date: string, distance: number}> }}
+ * @returns {{ type: 'GRAPH'|'TABLE'|'TEXT', format: Array<{date: string, distance: number}> }}
  */
 export function parseComponentInput(input) {
   // 1) detect the component type
-  const typeMatch = input.match(/\b(graph|table|text)\b/i);
+  const typeMatch = input.match(/\b(GRAPH|TABLE|TEXT)\b/i);
   if (!typeMatch) {
     throw new Error("Could not determine component type (graph|table|text).");
   }

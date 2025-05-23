@@ -1,27 +1,29 @@
 // src/components/molecules/FooterTabs.tsx
 import { BottomNavigation, BottomNavigationAction, Paper } from "@mui/material";
+import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { setActiveTab } from "../../services/tabsService";
+import { AppDispatch } from "../../redux/store";
+import { changeActiveTab } from "../../redux/tabsSlice";
 
 interface TabDefinition {
   label: string;
   value: string;
 }
 
-interface FooterTabsProps {
+type FooterTabsProps = {
   tabs: TabDefinition[];
   /** currently active tab */
   value: string;
   /** notify parent when user clicks a tab */
-  onChange: (tab: string) => void;
-}
+};
 
-const FooterTabs: React.FC<FooterTabsProps> = ({ tabs, value, onChange }) => {
+const FooterTabs: React.FC<FooterTabsProps> = (props: FooterTabsProps) => {
+  const { tabs, value } = props;
   const navigate = useNavigate();
+  const dispatch = useDispatch<AppDispatch>();
 
   const handleChange = (_: React.SyntheticEvent, newValue: string) => {
-    setActiveTab(newValue); // persist to backend
-    onChange(newValue); // update App state
+    dispatch(changeActiveTab(newValue)); // persist to backend
     navigate(`/${newValue}`); // change route
   };
 

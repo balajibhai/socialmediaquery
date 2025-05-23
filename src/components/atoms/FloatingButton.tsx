@@ -5,8 +5,7 @@ import { useContext } from "react";
 import { useDispatch } from "react-redux";
 import { AppContext } from "../../context/AppContext";
 import { AppDispatch } from "../../redux/store";
-import { toggle } from "../../redux/toggleSlice";
-import { clearComponents } from "../../services/tabsService";
+import { clearTabComponents } from "../../redux/tabsSlice";
 
 const StyledFab = styled(Fab)({
   position: "fixed",
@@ -20,8 +19,7 @@ const FloatingButton = () => {
   const dispatch = useDispatch<AppDispatch>();
 
   const onClear = async () => {
-    await clearComponents("tab1");
-    dispatch(toggle());
+    dispatch(clearTabComponents("tab1"));
     setMessages([]);
   };
   return (

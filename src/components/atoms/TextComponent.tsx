@@ -1,4 +1,4 @@
-import { DataPoint } from "../../redux/tabsSlice";
+import { DataPoint } from "../../services/tabsService";
 
 type TextComponentProps = {
   data: DataPoint[];

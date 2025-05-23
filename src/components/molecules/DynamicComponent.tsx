@@ -1,9 +1,8 @@
-import { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
+import { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { componentMap } from "../../constants";
-import { RootState } from "../../redux/store";
-import { Tab } from "../../redux/tabsSlice";
-import { fetchState } from "../../services/tabsService";
+import { AppDispatch, RootState } from "../../redux/store";
+import { loadTabs } from "../../redux/tabsSlice";
 
 type PreviewContentProps = {
   currentTabNumber: number;
@@ -11,16 +10,15 @@ type PreviewContentProps = {
 };
 
 const DynamicComponent = (props: PreviewContentProps) => {
-  const isDataSent = useSelector((s: RootState) => s.toggle);
+  const dispatch = useDispatch<AppDispatch>();
   const { currentTabNumber, header } = props;
-  const [tabs, setTabs] = useState<Tab[]>([]);
-  useEffect(() => {
-    fetchState().then((data) => {
-      setTabs([...data.tabs]);
-    });
-  }, [isDataSent.value]);
+  const { tabs } = useSelector((s: RootState) => s.tabs);
   const tabKey = `tab${currentTabNumber}`;
   const currentTab = tabs.find((t) => t.key === tabKey);
+
+  useEffect(() => {
+    dispatch(loadTabs());
+  }, [dispatch]);
 
   if (!currentTab) {
     return <div>No tab found for "{tabKey}"</div>;
@@ -31,7 +29,9 @@ const DynamicComponent = (props: PreviewContentProps) => {
       <h3>{header}</h3>
       {currentTab.components.map((component) => {
         if (!component.data) return null;
-        const Component = componentMap[component.type];
+        const componentType =
+          component.type.toUpperCase() as keyof typeof componentMap;
+        const Component = componentMap[componentType];
         if (!Component) return null;
         return <Component key={component.id} data={component.data} />;
       })}

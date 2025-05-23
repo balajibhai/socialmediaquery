@@ -1,24 +1,18 @@
 // src/App.tsx
-import React, { useContext, useEffect, useState } from "react";
-import { BrowserRouter, Route, Routes, useNavigate } from "react-router-dom";
+import React, { useContext } from "react";
+import { useSelector } from "react-redux";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
 import FooterTabs from "./components/molecules/FooterTabs";
 import TabRoute from "./components/molecules/TabRoute";
 import PreviewSection from "./components/organisms/PreviewSection";
 import { AppContext } from "./context/AppContext";
-import { fetchState } from "./services/tabsService";
+import { RootState } from "./redux/store";
 
 const AppContent: React.FC = () => {
   const ctx = useContext(AppContext)!;
-  const [activeTabKey, setActiveTabKey] = useState<string>("tab1");
-  const navigate = useNavigate();
-
-  // on mount, pull initial tab from backend
-  useEffect(() => {
-    fetchState().then((state) => {
-      setActiveTabKey(state.activeTabKey);
-      navigate(`/${state.activeTabKey}`, { replace: true });
-    });
-  }, [navigate]);
+  const activeTabKey = useSelector(
+    (state: RootState) => state.tabs.activeTabKey
+  );
 
   return (
     <>
@@ -40,18 +34,15 @@ const AppContent: React.FC = () => {
         ))}
         <Route
           path="/"
-          element={<div>Please select a tab from the footer.</div>}
+          element={<div>Please select preview tab from the footer.</div>}
         />
         <Route path="*" element={<div>404 - Not Found</div>} />
       </Routes>
-
       {activeTabKey === "tab1" && <PreviewSection />}
-
       <div style={{ paddingBottom: 56 }}>
         <FooterTabs
           tabs={ctx.allTabs}
           value={activeTabKey} // pass current tab here
-          onChange={(newKey) => setActiveTabKey(newKey)}
         />
       </div>
     </>

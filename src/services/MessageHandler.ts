@@ -1,25 +1,26 @@
 import { componentMap } from "../constants";
 import { Message } from "../types";
 
+const API_URL = process.env.REACT_APP_API_URL!;
 export class MessageHandler {
   static async handleMessageSubmission(
     question: string,
     messages: Message[]
   ): Promise<any> {
-    const response = await fetch("http://localhost:5000/api/detect", {
+    const response = await fetch(`${API_URL}/api/detect`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ text: question }),
     });
 
-    const data = await response.json();
-
-    if (data.key) {
-      const Component = componentMap[data.key as keyof typeof componentMap];
-      return { data, Component };
+    if (!response.ok) {
+      throw new Error(`Server error ${response.status}`);
     }
 
-    return null;
+    const data = await response.json();
+    const componentType = data.key.toUpperCase();
+    const Component = componentMap[componentType as keyof typeof componentMap];
+    return { data, Component };
   }
 
   static createNewMessage(question: string, messageLength: number): Message {

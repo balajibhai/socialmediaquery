@@ -4,9 +4,8 @@ import { useDispatch } from "react-redux";
 import HomePage from "../components/pages/HomePage";
 import { MessageComponent } from "../constants";
 import { AppDispatch } from "../redux/store";
-import { toggle } from "../redux/toggleSlice";
+import { createComponent, mergeHomeComponents } from "../redux/tabsSlice";
 import { MessageHandler } from "../services/MessageHandler";
-import { addComponent, mergeHome } from "../services/tabsService";
 import { Message, TabConfig } from "../types";
 import { parseComponentInput } from "../utils/parseComponentInput";
 
@@ -29,7 +28,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({
   const [question, setQuestion] = useState<string>("");
   const [messages, setMessages] = useState<Message[]>([]);
   const [allTabs, setAllTabs] = useState<TabConfig[]>([
-    { label: "Tab1", value: "tab1", component: HomePage, currentTab: 0 },
+    { label: "Preview tab", value: "tab1", component: HomePage, currentTab: 0 },
   ]);
   const dispatch = useDispatch<AppDispatch>();
 
@@ -74,10 +73,16 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({
           data.key !== MessageComponent.SET
         ) {
           const { type, format } = parseComponentInput(question);
-          await addComponent("tab1", type, format);
+          await dispatch(
+            createComponent({
+              key: "tab1",
+              type: type, // or "table" | "text"
+              data: format,
+            })
+          );
         }
         if (data.key === MessageComponent.SET) {
-          await mergeHome(`tab${data.numberOfTabs}`);
+          await dispatch(mergeHomeComponents(`tab${data.numberOfTabs}`));
         }
         handleTabCreation(data);
         setMessages((prev) =>
@@ -101,7 +106,6 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({
         )
       );
     }
-    dispatch(toggle());
   };
 
   return (
