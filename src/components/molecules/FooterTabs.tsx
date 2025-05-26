@@ -4,14 +4,10 @@ import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { AppDispatch } from "../../redux/store";
 import { changeActiveTab } from "../../redux/tabsSlice";
-
-interface TabDefinition {
-  label: string;
-  value: string;
-}
+import { TabConfig } from "../../types";
 
 type FooterTabsProps = {
-  tabs: TabDefinition[];
+  tabs: TabConfig[];
   /** currently active tab */
   value: string;
   /** notify parent when user clicks a tab */
