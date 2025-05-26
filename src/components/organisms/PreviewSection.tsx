@@ -1,6 +1,6 @@
 // src/components/organisms/MainLayout.tsx
 import { Box } from "@mui/material";
-import DynamicComponent from "../molecules/DynamicComponent";
+import TabComponent from "../molecules/TabComponent";
 
 const PreviewSection = () => {
   return (
@@ -22,7 +22,7 @@ const PreviewSection = () => {
         role="presentation"
       >
         <Box p={2}>
-          <DynamicComponent currentTab="preview" header="Preview" />
+          <TabComponent currentTab="preview" header="Preview" />
         </Box>
       </Box>
     </Box>

@@ -3,7 +3,7 @@ import React, { useContext } from "react";
 import { useSelector } from "react-redux";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import FooterTabs from "./components/molecules/FooterTabs";
-import TabRoute from "./components/molecules/TabRoute";
+import TabComponent from "./components/molecules/TabComponent";
 import PreviewSection from "./components/organisms/PreviewSection";
 import HomePage from "./components/pages/HomePage";
 import { AppContext } from "./context/AppContext";
@@ -23,7 +23,7 @@ const AppContent: React.FC = () => {
           <Route
             key={tab.value}
             path={`/${tab.value}`}
-            element={<TabRoute tab={tab} />}
+            element={<TabComponent currentTab={tab.currentTab} />}
           />
         ))}
         <Route
