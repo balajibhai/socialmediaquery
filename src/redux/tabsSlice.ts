@@ -24,8 +24,8 @@ export interface TabsState {
 }
 
 const initialState: TabsState = {
-  tabs: [{ key: "tab1", components: [] }],
-  activeTabKey: "tab1",
+  tabs: [{ key: "preview", components: [] }],
+  activeTabKey: "preview",
   loading: false,
   error: null,
 };

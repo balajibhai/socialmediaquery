@@ -1,7 +1,6 @@
 // src/context/AppContext.tsx
 import React, { createContext, ReactNode, useState } from "react";
 import { useDispatch } from "react-redux";
-import HomePage from "../components/pages/HomePage";
 import { MessageComponent } from "../constants";
 import { AppDispatch } from "../redux/store";
 import { createComponent, mergeHomeComponents } from "../redux/tabsSlice";
@@ -28,16 +27,18 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({
   const [question, setQuestion] = useState<string>("");
   const [messages, setMessages] = useState<Message[]>([]);
   const [allTabs, setAllTabs] = useState<TabConfig[]>([
-    { label: "Preview tab", value: "tab1", component: HomePage, currentTab: 0 },
+    {
+      label: "Preview tab",
+      value: "preview",
+    },
   ]);
   const dispatch = useDispatch<AppDispatch>();
 
   const handleTabCreation = (data: any) => {
     if (data.key === "tab") {
       const newTabs = Array.from({ length: data.numberOfTabs }, (_, i) => ({
-        label: `Tab${allTabs.length + i + 1}`,
-        value: `tab${allTabs.length + i + 1}`,
-        component: undefined,
+        label: `Tab${allTabs.length + i}`,
+        value: `tab${allTabs.length + i}`,
       }));
       setAllTabs((prev) => [...prev, ...newTabs]);
     } else if (data.key === "set") {
@@ -75,7 +76,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({
           const { type, format } = parseComponentInput(question);
           await dispatch(
             createComponent({
-              key: "tab1",
+              key: "preview",
               type: type, // or "table" | "text"
               data: format,
             })

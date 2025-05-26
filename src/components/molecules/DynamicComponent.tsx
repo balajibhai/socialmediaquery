@@ -5,29 +5,34 @@ import { AppDispatch, RootState } from "../../redux/store";
 import { loadTabs } from "../../redux/tabsSlice";
 
 type PreviewContentProps = {
-  currentTabNumber: number;
+  currentTab: number | string;
   header?: string;
 };
 
 const DynamicComponent = (props: PreviewContentProps) => {
   const dispatch = useDispatch<AppDispatch>();
-  const { currentTabNumber, header } = props;
+  const { currentTab, header } = props;
   const { tabs } = useSelector((s: RootState) => s.tabs);
-  const tabKey = `tab${currentTabNumber}`;
-  const currentTab = tabs.find((t) => t.key === tabKey);
+  let tabKey = "";
+  if (currentTab === "preview") {
+    tabKey = currentTab;
+  } else {
+    tabKey = `tab${currentTab}`;
+  }
+  const resTab = tabs.find((t) => t.key === tabKey);
 
   useEffect(() => {
     dispatch(loadTabs());
   }, [dispatch]);
 
-  if (!currentTab) {
+  if (!resTab) {
     return <div>No tab found for "{tabKey}"</div>;
   }
 
   return (
     <div>
       <h3>{header}</h3>
-      {currentTab.components.map((component) => {
+      {resTab.components.map((component) => {
         if (!component.data) return null;
         const componentType =
           component.type.toUpperCase() as keyof typeof componentMap;

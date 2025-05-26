@@ -35,7 +35,7 @@ const ChatBottomSection = () => {
         style={{ marginBottom: "8px" }}
         disabled={false}
       />
-      {activeTabKey === "tab1" && <FloatingButton />}
+      {activeTabKey === "preview" && <FloatingButton />}
       <Button
         variant="contained"
         color="primary"

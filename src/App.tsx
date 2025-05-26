@@ -5,6 +5,7 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import FooterTabs from "./components/molecules/FooterTabs";
 import TabRoute from "./components/molecules/TabRoute";
 import PreviewSection from "./components/organisms/PreviewSection";
+import HomePage from "./components/pages/HomePage";
 import { AppContext } from "./context/AppContext";
 import { RootState } from "./redux/store";
 
@@ -17,19 +18,12 @@ const AppContent: React.FC = () => {
   return (
     <>
       <Routes>
+        <Route path="/preview" element={<HomePage />} />
         {ctx.allTabs.map((tab) => (
           <Route
             key={tab.value}
             path={`/${tab.value}`}
-            element={
-              <TabRoute
-                tab={tab}
-                question={ctx.question}
-                setQuestion={ctx.setQuestion}
-                messages={ctx.messages}
-                onSend={ctx.onSend}
-              />
-            }
+            element={<TabRoute tab={tab} />}
           />
         ))}
         <Route
@@ -38,7 +32,7 @@ const AppContent: React.FC = () => {
         />
         <Route path="*" element={<div>404 - Not Found</div>} />
       </Routes>
-      {activeTabKey === "tab1" && <PreviewSection />}
+      {activeTabKey === "preview" && <PreviewSection />}
       <div style={{ paddingBottom: 56 }}>
         <FooterTabs
           tabs={ctx.allTabs}

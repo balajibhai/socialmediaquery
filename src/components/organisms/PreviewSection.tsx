@@ -22,7 +22,7 @@ const PreviewSection = () => {
         role="presentation"
       >
         <Box p={2}>
-          <DynamicComponent currentTabNumber={1} header="Preview" />
+          <DynamicComponent currentTab="preview" header="Preview" />
         </Box>
       </Box>
     </Box>

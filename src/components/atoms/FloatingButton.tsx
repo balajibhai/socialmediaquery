@@ -19,7 +19,7 @@ const FloatingButton = () => {
   const dispatch = useDispatch<AppDispatch>();
 
   const onClear = async () => {
-    dispatch(clearTabComponents("tab1"));
+    dispatch(clearTabComponents("preview"));
     setMessages([]);
   };
   return (
