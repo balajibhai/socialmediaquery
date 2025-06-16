@@ -11,4 +11,5 @@ export const componentMap = {
 export const MessageComponent = {
   TAB: "tab",
   SET: "set",
+  NEW: "new",
 };

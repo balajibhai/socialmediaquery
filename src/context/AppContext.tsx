@@ -34,7 +34,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({
   ]);
   const dispatch = useDispatch<AppDispatch>();
 
-  const handleTabCreation = (data: any) => {
+  const handleTabCreation = async (data: any) => {
     if (data.key === "tab") {
       const newTabs = Array.from({ length: data.numberOfTabs }, (_, i) => ({
         label: `Tab${allTabs.length + i}`,
@@ -49,6 +49,17 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({
             : t
         )
       );
+    } else if (data.key === "new") {
+      setAllTabs((prev) =>
+        prev.concat([
+          {
+            label: `Tab${allTabs.length}`,
+            value: `tab${allTabs.length}`,
+            currentTab: allTabs.length,
+          },
+        ])
+      );
+      await dispatch(mergeHomeComponents(`tab${allTabs.length}`));
     }
   };
 
@@ -71,7 +82,8 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({
         const { data } = result;
         if (
           data.key !== MessageComponent.TAB &&
-          data.key !== MessageComponent.SET
+          data.key !== MessageComponent.SET &&
+          data.key !== MessageComponent.NEW
         ) {
           const { type, format } = parseComponentInput(question);
           await dispatch(
