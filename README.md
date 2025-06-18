@@ -24,5 +24,7 @@ Add 3 tabs
 
 set current to 3
 
+add current to new 
 
 
+Table, text and graph request (date and distance) from the user can be in any format, as these are integrated with AI.
