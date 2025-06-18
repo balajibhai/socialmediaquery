@@ -1,9 +1,11 @@
 import { configureStore } from "@reduxjs/toolkit";
 import tabsReducer from "./tabsSlice";
+import questionReducer from "./questionSlice";
 
 export const store = configureStore({
   reducer: {
     tabs: tabsReducer,
+    question: questionReducer,
   },
 });
 

@@ -4,9 +4,12 @@ import { useDispatch } from "react-redux";
 import { MessageComponent } from "../constants";
 import { AppDispatch } from "../redux/store";
 import { createComponent, mergeHomeComponents } from "../redux/tabsSlice";
+import {
+  setQuestion as setQuestionAction,
+  sendQuestion,
+} from "../redux/questionSlice";
 import { MessageHandler } from "../services/MessageHandler";
 import { Message, TabConfig } from "../types";
-import { parseComponentInput } from "../utils/parseComponentInput";
 
 interface AppContextType {
   question: string;
@@ -85,12 +88,15 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({
           data.key !== MessageComponent.SET &&
           data.key !== MessageComponent.NEW
         ) {
-          const { type, format } = parseComponentInput(question);
+          dispatch(setQuestionAction(question));
+          const {
+            payload: { data, type },
+          } = await dispatch(sendQuestion(question));
           await dispatch(
             createComponent({
               key: "preview",
-              type: type, // or "table" | "text"
-              data: format,
+              type: type,
+              data: data,
             })
           );
         }
